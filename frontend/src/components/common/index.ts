@@ -10,8 +10,8 @@ export { default as Container } from './Container';
 export { default as Grid } from './Grid';
 export { default as Panel } from './Panel';
 export { Layout } from './Layout';
-export { EnhancedNavigation } from './EnhancedNavigation';
-export { EnhancedPageHeader } from './EnhancedPageHeader';
+export { PageHeader } from './PageHeader';
+export { TopNavigation } from './TopNavigation';
 
 // UI components
 export { Button } from './Button';
@@ -53,4 +53,3 @@ export type { CardProps } from './Card';
 export type { ContainerProps } from './Container';
 export type { GridProps } from './Grid';
 export type { PanelProps } from './Panel';
-export type { EnhancedPageHeaderProps } from './EnhancedPageHeader';

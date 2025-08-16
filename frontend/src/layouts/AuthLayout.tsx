@@ -5,7 +5,6 @@
  * It provides a centered card layout without the main navigation.
  */
 import React from 'react';
-import BaseLayout from './BaseLayout';
 
 export interface AuthLayoutProps {
   children: React.ReactNode;
@@ -23,24 +22,24 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   footer,
 }) => {
   return (
-    <BaseLayout className={`flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${className}`}>
+    <div className={`min-h-dvh bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${className}`}>
       <div className="max-w-md w-full space-y-8">
         {(title || subtitle) && (
           <div className="text-center">
             {title && (
-              <h2 className="text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">
+              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
                 {title}
               </h2>
             )}
             {subtitle && (
-              <div className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 {subtitle}
               </div>
             )}
           </div>
         )}
         
-        <div className="bg-white dark:bg-neutral-900 py-8 px-6 shadow rounded-lg sm:px-10">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm py-8 px-6 sm:px-10">
           {children}
         </div>
         
@@ -50,7 +49,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
           </div>
         )}
       </div>
-    </BaseLayout>
+    </div>
   );
 };
 

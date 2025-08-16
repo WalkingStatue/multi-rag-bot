@@ -73,7 +73,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   if (isSystem) {
     return (
       <div className={`flex justify-center ${className}`}>
-        <div className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+        <div className="bg-gray-100 dark:bg-gray-900/40 text-gray-600 dark:text-gray-400 text-sm px-3 py-1 rounded-full">
           {message.content}
         </div>
       </div>
@@ -92,8 +92,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <div
           className={`px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
             isUser
-              ? 'bg-blue-600 text-white rounded-br-sm'
-              : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+              ? 'bg-primary-600 text-white rounded-br-sm dark:bg-primary-500'
+              : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 border dark:border-gray-800 rounded-bl-sm'
           } ${showDetails ? 'shadow-lg' : 'hover:shadow-md'}`}
           onClick={() => setShowDetails(!showDetails)}
         >
@@ -109,24 +109,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1 ml-2">{children}</ul>,
                   ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1 ml-2">{children}</ol>,
                   li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
-                  h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-white">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-base font-bold mb-2 text-white">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-sm font-bold mb-1 text-white">{children}</h3>,
+                  h1: ({ children }) => <h1 className={`text-lg font-bold mb-2 ${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>{children}</h1>,
+                  h2: ({ children }) => <h2 className={`text-base font-bold mb-2 ${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>{children}</h2>,
+                  h3: ({ children }) => <h3 className={`text-sm font-bold mb-1 ${isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>{children}</h3>,
                   code: ({ children, className }) => {
                     const isInline = !className;
                     return isInline ? (
                       <code className={`px-1 py-0.5 rounded text-xs font-mono ${
                         isUser 
-                          ? 'bg-blue-500 text-blue-100' 
-                          : 'bg-gray-200 text-gray-800'
+                          ? 'bg-primary-500 text-primary-100' 
+                          : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
                       }`}>
                         {children}
                       </code>
                     ) : (
                       <code className={`block p-2 rounded text-xs font-mono whitespace-pre-wrap overflow-x-auto mt-2 ${
                         isUser 
-                          ? 'bg-blue-500 text-blue-100' 
-                          : 'bg-gray-200 text-gray-800'
+                          ? 'bg-primary-500 text-primary-100' 
+                          : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
                       }`}>
                         {children}
                       </code>
@@ -135,8 +135,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   pre: ({ children }) => (
                     <pre className={`p-2 rounded text-xs font-mono whitespace-pre-wrap overflow-x-auto mt-2 ${
                       isUser 
-                        ? 'bg-blue-500 text-blue-100' 
-                        : 'bg-gray-200 text-gray-800'
+                        ? 'bg-primary-500 text-primary-100' 
+                        : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
                     }`}>
                       {children}
                     </pre>
@@ -144,8 +144,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   blockquote: ({ children }) => (
                     <blockquote className={`border-l-4 pl-3 italic mb-2 ${
                       isUser 
-                        ? 'border-blue-300 text-blue-100' 
-                        : 'border-gray-300 text-gray-600'
+                        ? 'border-primary-300 text-primary-100' 
+                        : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
                     }`}>
                       {children}
                     </blockquote>
@@ -159,8 +159,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       rel="noopener noreferrer"
                       className={`underline hover:no-underline ${
                         isUser 
-                          ? 'text-blue-200 hover:text-blue-100' 
-                          : 'text-blue-600 hover:text-blue-800'
+                          ? 'text-primary-200 hover:text-primary-100' 
+                          : 'text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300'
                       }`}
                     >
                       {children}
@@ -170,7 +170,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   table: ({ children }) => (
                     <div className="overflow-x-auto mt-2 mb-2">
                       <table className={`min-w-full text-xs ${
-                        isUser ? 'text-white' : 'text-gray-900'
+                        isUser ? 'text-white' : 'text-gray-900 dark:text-gray-100'
                       }`}>
                         {children}
                       </table>
@@ -179,8 +179,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   th: ({ children }) => (
                     <th className={`px-2 py-1 border font-semibold ${
                       isUser 
-                        ? 'border-blue-400 bg-blue-500' 
-                        : 'border-gray-300 bg-gray-100'
+                        ? 'border-primary-400 bg-primary-500' 
+                        : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                     }`}>
                       {children}
                     </th>
@@ -188,8 +188,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   td: ({ children }) => (
                     <td className={`px-2 py-1 border ${
                       isUser 
-                        ? 'border-blue-400' 
-                        : 'border-gray-300'
+                        ? 'border-primary-400' 
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}>
                       {children}
                     </td>
@@ -203,7 +203,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           
           {/* Message metadata */}
           {message.message_metadata?.chunks_used && message.message_metadata.chunks_used.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500">
+            <div className={`mt-2 pt-2 border-t text-xs ${
+              isUser 
+                ? 'border-primary-400 text-primary-200' 
+                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'
+            }`}>
               <span className="inline-flex items-center">
                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -223,7 +227,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {/* Expanded details */}
         {showDetails && message.message_metadata && (
-          <div className="mt-2 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+          <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-900/40 rounded-lg text-xs text-gray-600 dark:text-gray-400">
             {message.message_metadata.processing_time && (
               <div className="mb-1">
                 Processing time: {message.message_metadata.processing_time.toFixed(2)}s
@@ -240,7 +244,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               </div>
             )}
             {message.id && (
-              <div className="text-gray-400">
+              <div className="text-gray-400 dark:text-gray-500">
                 ID: {message.id}
               </div>
             )}

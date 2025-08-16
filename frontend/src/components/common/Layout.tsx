@@ -1,5 +1,11 @@
+/**
+ * Legacy Layout Component
+ * 
+ * Redirects to the new unified MainLayout for backward compatibility.
+ * @deprecated Use MainLayout directly instead.
+ */
 import React from 'react';
-import { Navigation } from './Navigation';
+import MainLayout from '../../layouts/MainLayout';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,14 +13,20 @@ interface LayoutProps {
   container?: boolean;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, className = '', container = true }) => {
+export const Layout: React.FC<LayoutProps> = ({ 
+  children, 
+  className = '', 
+  container = true 
+}) => {
   return (
-    <div className={`min-h-screen bg-neutral-50 dark:bg-[var(--bg)] transition-colors duration-200 ${className}`}>
-      <Navigation />
-      <main className={container ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : ''}>
-        <div className={container ? 'px-4 sm:px-0' : ''}>{children}</div>
-      </main>
-    </div>
+    <MainLayout 
+      className={className}
+      fullWidth={!container}
+      padding={container ? 'md' : 'none'}
+      noHeader={true}
+    >
+      {children}
+    </MainLayout>
   );
 };
 

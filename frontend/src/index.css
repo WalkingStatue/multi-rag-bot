@@ -104,11 +104,44 @@
 }
 
 html, body {
-  @apply bg-[var(--bg)] text-neutral-900 dark:text-neutral-100 antialiased;
+  @apply bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 antialiased;
   font-family: var(--font-sans);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-::selection { @apply bg-primary-200 text-neutral-900; }
+::selection { 
+  @apply bg-primary-200 dark:bg-primary-800 text-neutral-900 dark:text-neutral-100; 
+}
+
+/* Improved focus styles */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Better scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100 dark:bg-neutral-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400 dark:bg-neutral-500;
+}
 
 /* Chat-specific styles for proper scrolling */
 .chat-container {

@@ -13,6 +13,7 @@ import { websocketService } from '../../services/websocketService';
 import { CollaboratorInviteModal } from './CollaboratorInvite';
 import { Alert } from '../common/Alert';
 import { Button } from '../common/Button';
+import { Card } from '../common/Card';
 
 interface CollaborationManagementProps {
   botId: string;
@@ -236,7 +237,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   const renderCollaboratorsList = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-gray-900">Collaborators</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Collaborators</h3>
         {canManageCollaborators && (
           <Button
             onClick={() => setShowInviteModal(true)}
@@ -251,48 +252,48 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       {loading.collaborators ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading collaborators...</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Loading collaborators...</p>
         </div>
       ) : collaborators.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <p>No collaborators found for this bot.</p>
           {canManageCollaborators && (
             <p className="mt-2">Click "Invite Collaborator" to add team members.</p>
           )}
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <Card padding="none">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
             {collaborators.map((collaborator) => (
               <li key={collaborator.id} className="px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                        <span className="text-sm font-medium text-gray-700">
+                      <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {collaborator.username?.charAt(0).toUpperCase() || 'U'}
                         </span>
                       </div>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {collaborator.username}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {collaborator.email}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-400 dark:text-gray-500">
                         Added {new Date(collaborator.granted_at).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {permissionService.formatRoleName(collaborator.role)}
                       </div>
                       {canManageCollaborators && collaborator.role !== 'owner' && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           {permissionService.getRoleDescription(collaborator.role)}
                         </div>
                       )}
@@ -303,7 +304,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
                           value={collaborator.role}
                           onChange={(e) => handleUpdateRole(collaborator.user_id, e.target.value as any)}
                           disabled={loading.action}
-                          className="text-sm border border-gray-300 rounded px-2 py-1"
+                          className="text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded px-2 py-1"
                         >
                           <option value="viewer">Viewer</option>
                           <option value="editor">Editor</option>
@@ -312,7 +313,8 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
                         <Button
                           onClick={() => handleRemoveCollaborator(collaborator.user_id, collaborator.username || 'User')}
                           disabled={loading.action}
-                          className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1"
+                          variant="danger"
+                          size="sm"
                         >
                           Remove
                         </Button>
@@ -323,7 +325,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
               </li>
             ))}
           </ul>
-        </div>
+        </Card>
       )}
     </div>
   );
@@ -484,8 +486,8 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
     <div className="space-y-6">
       {/* Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900">Collaboration Management</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Collaboration Management</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Manage collaborators and permissions for "{botName}"
         </p>
       </div>
@@ -495,14 +497,14 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       {success && <Alert type="success" message={success} />}
 
       {/* Navigation Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-gray-800">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setViewMode({ type: 'collaborators' })}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               viewMode.type === 'collaborators'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
             Collaborators
@@ -514,8 +516,8 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
             }}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               viewMode.type === 'activity'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
             Activity Log
@@ -525,8 +527,8 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
               onClick={() => setViewMode({ type: 'bulk-update' })}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 viewMode.type === 'bulk-update'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
               Bulk Update

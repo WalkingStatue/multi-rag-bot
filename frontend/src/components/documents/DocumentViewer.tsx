@@ -133,12 +133,12 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl p-8 max-w-md w-full mx-4">
           <div className="animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mb-4"></div>
+            <div className="h-32 bg-gray-200 dark:bg-gray-800 rounded"></div>
           </div>
         </div>
       </div>
@@ -147,8 +147,8 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   if (error || !document) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl p-6 max-w-md w-full mx-4">
           <Alert type="error" message={error || 'Document not found'} />
           <div className="mt-4 flex justify-end">
             <Button onClick={onClose}>Close</Button>
@@ -161,10 +161,10 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
   const fileTypeInfo = getFileTypeInfo(document.mime_type || '');
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full h-full max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl max-w-6xl w-full h-full max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0">
               {document.mime_type?.includes('pdf') ? (
@@ -178,10 +178,10 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {document.filename}
               </h2>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                 <span>{formatFileSize(document.file_size || 0)}</span>
                 <span>{document.chunk_count} chunks</span>
                 <span>{fileTypeInfo.name}</span>
@@ -195,9 +195,9 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar - Chunk List */}
-          <div className="w-1/3 border-r border-gray-200 flex flex-col">
+          <div className="w-1/3 border-r border-gray-200 dark:border-gray-800 flex flex-col">
             {/* Search */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-800">
               <div className="flex space-x-2">
                 <div className="relative flex-1">
                   <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -207,7 +207,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="h-10 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 w-full pl-10 pr-4 py-2 placeholder:text-gray-400 focus-visible:ring focus-visible:ring-offset-0 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
                 <Button
@@ -228,14 +228,14 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
             <div className="flex-1 overflow-y-auto">
               {searchResults.length > 0 ? (
                 <div className="p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                     Search Results ({searchResults.length})
                   </h3>
                   <div className="space-y-2">
                     {searchResults.map((result, index) => (
                       <div
                         key={index}
-                        className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+                        className="p-3 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900/60"
                         onClick={() => {
                           // Find the chunk that contains this result
                           const chunk = document.chunks.find(c => 
@@ -246,7 +246,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           }
                         }}
                       >
-                        <div className="text-xs text-gray-500 mb-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           Score: {result.score.toFixed(3)}
                         </div>
                         <div className="text-sm">
@@ -258,7 +258,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 </div>
               ) : (
                 <div className="p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                     Document Chunks ({document.chunks.length})
                   </h3>
                   <div className="space-y-1">
@@ -267,20 +267,20 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         key={chunk.id}
                         className={`p-3 rounded-lg cursor-pointer transition-colors ${
                           selectedChunk?.id === chunk.id
-                            ? 'bg-blue-50 border border-blue-200'
-                            : 'hover:bg-gray-50 border border-transparent'
+                            ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-900/60 border border-transparent'
                         }`}
                         onClick={() => selectChunk(chunk)}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-gray-600">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                             Chunk {chunk.chunk_index + 1}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {chunk.content_length} chars
                           </span>
                         </div>
-                        <div className="text-sm text-gray-700 line-clamp-3">
+                        <div className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
                           {chunk.content_preview}
                         </div>
                       </div>
@@ -296,14 +296,14 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
             {selectedChunk ? (
               <>
                 {/* Chunk Header */}
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                        <HashtagIcon className="h-5 w-5 mr-2 text-gray-500" />
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center">
+                        <HashtagIcon className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
                         Chunk {selectedChunk.chunk_index + 1} of {document.chunks.length}
                       </h3>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {selectedChunk.content_length} characters
                       </span>
                     </div>
@@ -333,7 +333,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 {/* Chunk Content */}
                 <div className="flex-1 p-6 overflow-y-auto">
                   <div className="prose max-w-none">
-                    <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                    <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
                       {searchQuery 
                         ? highlightSearchTerm(selectedChunk.content_preview, searchQuery)
                         : selectedChunk.content_preview
@@ -343,10 +343,10 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
                   {/* Chunk Metadata */}
                   {selectedChunk.metadata && Object.keys(selectedChunk.metadata).length > 0 && (
-                    <div className="mt-8 pt-6 border-t border-gray-200">
-                      <h4 className="text-sm font-medium text-gray-900 mb-3">Metadata</h4>
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                    <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Metadata</h4>
+                      <div className="bg-gray-50 dark:bg-gray-900/40 rounded-lg p-4">
+                        <pre className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
                           {JSON.stringify(selectedChunk.metadata, null, 2)}
                         </pre>
                       </div>
@@ -358,7 +358,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
                   <EyeIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Select a chunk to view its content</p>
+                  <p className="text-gray-500 dark:text-gray-400">Select a chunk to view its content</p>
                 </div>
               </div>
             )}

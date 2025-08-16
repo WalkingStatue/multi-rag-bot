@@ -1,75 +1,128 @@
 /**
- * MainLayout component
+ * Unified Main Layout Component
  * 
- * This layout includes the main navigation and serves as the base for most pages.
- * It supports optional sidebar and different content layouts.
+ * Single layout component that handles all page layouts with consistent styling.
+ * Supports different content widths, padding options, and page headers.
  */
-import React, { useState } from 'react';
-import { EnhancedNavigation } from '../components/common/EnhancedNavigation';
-import BaseLayout from './BaseLayout';
+import React from 'react';
+import { TopNavigation } from '../components/common/TopNavigation';
 
 export interface MainLayoutProps {
   children: React.ReactNode;
   className?: string;
   contentClassName?: string;
-  hasSidebar?: boolean;
-  sidebarContent?: React.ReactNode;
-  sidebarWidth?: string;
+  
+  // Layout options
   fullWidth?: boolean;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  
+  // Page header
+  title?: string;
+  subtitle?: string;
+  actions?: React.ReactNode;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
+  
+  // Special layouts
+  centered?: boolean;
+  noHeader?: boolean;
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({
   children,
   className = '',
   contentClassName = '',
-  hasSidebar = false,
-  sidebarContent,
-  sidebarWidth = '280px',
   fullWidth = false,
+  maxWidth = '2xl',
+  padding = 'md',
+  title,
+  subtitle,
+  actions,
+  showBackButton = false,
+  onBackClick,
+  centered = false,
+  noHeader = false,
 }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  // Max width classes
+  const maxWidthClasses = {
+    sm: 'max-w-3xl',
+    md: 'max-w-5xl',
+    lg: 'max-w-6xl',
+    xl: 'max-w-7xl',
+    '2xl': 'max-w-screen-2xl',
+    full: 'max-w-full',
   };
 
+  // Padding classes
+  const paddingClasses = {
+    none: 'px-0',
+    sm: 'px-4 sm:px-6',
+    md: 'px-4 sm:px-6 lg:px-8',
+    lg: 'px-6 sm:px-8 lg:px-12',
+  };
+
+  // Container classes
+  const containerClasses = [
+    fullWidth ? 'w-full' : maxWidthClasses[maxWidth],
+    fullWidth ? '' : 'mx-auto',
+    paddingClasses[padding],
+    'py-6',
+  ].filter(Boolean).join(' ');
+
   return (
-    <BaseLayout className={className}>
-      {/* Main Navigation */}
-      <EnhancedNavigation onToggleSidebar={hasSidebar ? toggleSidebar : undefined} />
+    <div className={`min-h-dvh bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 ${className}`}>
+      {/* Top Navigation */}
+      <TopNavigation />
       
       {/* Main Content Area */}
-      <div className="flex flex-1 pt-16"> {/* pt-16 to account for navbar height */}
-        {/* Sidebar */}
-        {hasSidebar && (
-          <aside 
-            className={`fixed top-16 left-0 z-10 h-[calc(100vh-4rem)] bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 transition-all duration-300 ${
-              isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
-            style={{ width: sidebarWidth }}
-          >
-            <div className="h-full overflow-y-auto p-4">
-              {sidebarContent}
+      <main className={contentClassName}>
+        <div className={containerClasses}>
+          {/* Page Header */}
+          {!noHeader && (title || subtitle || actions || showBackButton) && (
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  {showBackButton && (
+                    <button
+                      onClick={onBackClick}
+                      className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-150"
+                      aria-label="Go back"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                    </button>
+                  )}
+                  <div>
+                    {title && (
+                      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                        {title}
+                      </h1>
+                    )}
+                    {subtitle && (
+                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        {subtitle}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {actions && (
+                  <div className="flex items-center space-x-3">
+                    {actions}
+                  </div>
+                )}
+              </div>
             </div>
-          </aside>
-        )}
-        
-        {/* Main Content */}
-        <main 
-          className={`flex-1 transition-all duration-300 ${contentClassName}`}
-          style={{ 
-            marginLeft: hasSidebar && isSidebarOpen ? sidebarWidth : '0',
-            width: hasSidebar && isSidebarOpen ? `calc(100% - ${sidebarWidth})` : '100%'
-          }}
-        >
-          <div className={fullWidth ? '' : 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'}>
-            <div className={fullWidth ? '' : 'px-4 sm:px-0'}>
-              {children}
-            </div>
+          )}
+          
+          {/* Page Content */}
+          <div className={centered ? 'flex items-center justify-center min-h-[60vh]' : ''}>
+            {children}
           </div>
-        </main>
-      </div>
-    </BaseLayout>
+        </div>
+      </main>
+    </div>
   );
 };
 

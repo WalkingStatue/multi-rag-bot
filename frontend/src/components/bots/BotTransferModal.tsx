@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { BotWithRole, BotTransferRequest } from '../../types/bot';
 import { botService } from '../../services/botService';
+import { Button } from '../common/Button';
 
 interface BotTransferModalProps {
   bot: BotWithRole;
@@ -95,15 +96,15 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-black/50 overflow-y-auto h-full w-full z-40">
+      <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-800 w-96 shadow-xl rounded-xl bg-white dark:bg-gray-900">
         <div className="mt-3">
           {/* Modal Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Transfer Bot Ownership</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Transfer Bot Ownership</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -114,7 +115,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
           {/* Modal Content */}
           <div className="space-y-4">
             {/* Bot Info */}
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
+            <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-md p-4">
               <div className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
                   <svg className="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -122,8 +123,8 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900">{bot.bot.name}</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">{bot.bot.name}</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {bot.bot.description || 'No description'}
                   </p>
                 </div>
@@ -131,7 +132,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
             </div>
 
             {/* Warning */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -139,10 +140,10 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                     Important: This action cannot be undone
                   </h3>
-                  <div className="mt-2 text-sm text-yellow-700">
+                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                     <p>
                       Once you transfer ownership, you will lose all owner privileges for this bot. 
                       The new owner will have full control and can remove your access entirely.
@@ -154,7 +155,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
 
             {/* User Search */}
             <div>
-              <label htmlFor="user-search" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="user-search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Search for new owner
               </label>
               <div className="relative">
@@ -164,7 +165,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
                   placeholder="Enter username or email..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="h-10 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 w-full pl-10 pr-4 py-2 placeholder:text-gray-400 focus-visible:ring focus-visible:ring-offset-0 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,26 +181,26 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
 
               {/* Search Results */}
               {searchResults.length > 0 && (
-                <div className="mt-2 max-h-40 overflow-y-auto border border-gray-300 rounded-md bg-white shadow-sm">
+                <div className="mt-2 max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 shadow-sm">
                   {searchResults.map((user) => (
                     <button
                       key={user.id}
                       onClick={() => handleUserSelect(user)}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
+                      className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 focus:bg-gray-50 dark:focus:bg-gray-800/50 focus:outline-none border-b border-gray-100 dark:border-gray-800 last:border-b-0"
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-600">
+                          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                               {user.username.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {user.username}
                           </p>
-                          <p className="text-sm text-gray-500 truncate">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {user.email}
                           </p>
                         </div>
@@ -211,20 +212,20 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
 
               {/* Selected User */}
               {selectedUser && (
-                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-blue-800">
+                      <div className="w-8 h-8 bg-blue-200 dark:bg-blue-700 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
                           {selectedUser.username.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-blue-900">
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
                         {selectedUser.username}
                       </p>
-                      <p className="text-sm text-blue-700">
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
                         {selectedUser.email}
                       </p>
                     </div>
@@ -233,7 +234,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
                         setSelectedUser(null);
                         setSearchQuery('');
                       }}
-                      className="text-blue-400 hover:text-blue-600"
+                      className="text-blue-400 hover:text-blue-600 dark:text-blue-300 dark:hover:text-blue-200"
                     >
                       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -245,35 +246,36 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
 
               {/* Search Error */}
               {searchError && (
-                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-sm text-red-600">{searchError}</p>
+                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                  <p className="text-sm text-red-600 dark:text-red-400">{searchError}</p>
                 </div>
               )}
 
               {/* No Results */}
               {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && !searchError && (
-                <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
-                  <p className="text-sm text-gray-600">No users found matching "{searchQuery}"</p>
+                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-md">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">No users found matching "{searchQuery}"</p>
                 </div>
               )}
             </div>
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-4">
-              <button
+              <Button
                 onClick={onClose}
                 disabled={isTransferring}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="outline"
+                size="sm"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleTransfer}
                 disabled={!selectedUser || isTransferring}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                size="sm"
               >
                 {isTransferring ? 'Transferring...' : 'Transfer Ownership'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

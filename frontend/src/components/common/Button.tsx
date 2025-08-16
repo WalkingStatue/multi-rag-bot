@@ -1,13 +1,16 @@
 /**
- * Reusable Button component
+ * Enhanced Button Component
+ * 
+ * Consistent button styling with improved dark mode support and better visual hierarchy.
  */
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
   children: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -17,30 +20,36 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   children,
   className = '',
+  fullWidth = false,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-150 border border-transparent';
   
   const variantClasses = {
-    primary: 'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500 dark:focus:ring-primary-400',
-    secondary: 'bg-neutral-200 hover:bg-neutral-300 text-neutral-900 focus:ring-neutral-500 dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-100 dark:focus:ring-neutral-400',
-    outline: 'bg-transparent text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800 focus:ring-primary-500 dark:focus:ring-primary-400',
-    ghost: 'bg-transparent text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:ring-primary-500 dark:focus:ring-primary-400',
-    danger: 'bg-danger-600 hover:bg-danger-700 text-white focus:ring-danger-500 dark:focus:ring-danger-400',
+    primary: 'bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white shadow-sm focus:ring-primary-500 dark:focus:ring-primary-400',
+    secondary: 'bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-900 shadow-sm focus:ring-gray-500 dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:text-gray-100 dark:focus:ring-gray-400',
+    outline: 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50 active:bg-gray-100 dark:active:bg-gray-800 shadow-sm focus:ring-primary-500 dark:focus:ring-primary-400',
+    ghost: 'bg-transparent text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/50 active:bg-gray-200 dark:active:bg-gray-800 focus:ring-primary-500 dark:focus:ring-primary-400',
+    danger: 'bg-danger-600 hover:bg-danger-700 active:bg-danger-800 text-white shadow-sm focus:ring-danger-500 dark:focus:ring-danger-400',
+    success: 'bg-success-600 hover:bg-success-700 active:bg-success-800 text-white shadow-sm focus:ring-success-500 dark:focus:ring-success-400',
   } as const;
 
   const sizeClasses = {
+    xs: 'px-2.5 py-1.5 text-xs',
     sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-2 text-sm',
+    md: 'px-4 py-2.5 text-sm',
     lg: 'px-6 py-3 text-base',
+    xl: 'px-8 py-4 text-lg',
   };
 
-  const disabledClasses = 'opacity-50 cursor-not-allowed';
+  const disabledClasses = 'opacity-50 cursor-not-allowed pointer-events-none';
+  const fullWidthClasses = fullWidth ? 'w-full' : '';
 
   const classes = [
     baseClasses,
     variantClasses[variant],
     sizeClasses[size],
+    fullWidthClasses,
     (disabled || isLoading) && disabledClasses,
     className,
   ].filter(Boolean).join(' ');
