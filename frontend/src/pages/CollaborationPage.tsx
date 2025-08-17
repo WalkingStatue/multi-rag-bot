@@ -10,7 +10,8 @@ import { permissionService } from '../services/permissionService';
 import { CollaborationManagement } from '../components/bots/CollaborationManagement';
 import { BulkPermissionManager } from '../components/bots/BulkPermissionManager';
 import { NotificationSystem } from '../components/common/NotificationSystem';
-import { Alert, Button, Container } from '../components/common';
+import { Button, Container } from '../components/common';
+import { useToastHelpers } from '../components/common/Toast';
 
 import { MainLayout } from '../layouts';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
@@ -22,6 +23,7 @@ interface CollaborationPageProps {
 export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: propBotId }) => {
   const { botId: urlBotId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
+  const { error: showErrorToast } = useToastHelpers();
   
   const botId = propBotId || urlBotId;
   
@@ -71,7 +73,9 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
       }
     } catch (err: any) {
       console.error('Failed to load bot data:', err);
-      setError(err.response?.data?.detail || 'Failed to load bot data');
+      const errorMessage = err.response?.data?.detail || 'Failed to load bot data';
+      setError(errorMessage);
+      showErrorToast('Error Loading Bot', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -119,8 +123,14 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
       <ProtectedRoute>
         <MainLayout>
           <Container size="lg" padding="md" centered>
-            <Alert type="error" message={error} />
-            <div className="mt-4">
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mb-6">
+                <svg className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Error Loading Bot</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 mb-8">{error}</p>
               <Button
                 onClick={() => navigate('/dashboard')}
                 className="bg-neutral-700 hover:bg-neutral-800 text-white"
@@ -139,8 +149,14 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
       <ProtectedRoute>
         <MainLayout>
           <Container size="lg" padding="md" centered>
-            <Alert type="error" message="Bot not found" />
-            <div className="mt-4">
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mb-6">
+                <svg className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Bot Not Found</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 mb-8">The requested bot could not be found.</p>
               <Button
                 onClick={() => navigate('/dashboard')}
                 className="bg-neutral-700 hover:bg-neutral-800 text-white"

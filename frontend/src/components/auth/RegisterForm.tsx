@@ -1,9 +1,11 @@
 /**
  * Registration form component
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useToastHelpers } from '../common/Toast';
+import { setAuthToastFunction } from '../../stores/authStore';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Alert } from '../common/Alert';
@@ -15,6 +17,7 @@ interface RegisterFormProps {
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const { register, isLoading, error, clearError } = useAuth();
+  const { error: showErrorToast } = useToastHelpers();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -23,6 +26,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     fullName: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Set up toast function for auth store
+  useEffect(() => {
+    setAuthToastFunction(showErrorToast);
+  }, [showErrorToast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,10 +41,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
     
-    // Clear global error
-    if (error) {
-      clearError();
-    }
+    // Don't clear global error automatically - let user dismiss it manually
+    // This prevents errors from disappearing too quickly
   };
 
   const validateForm = () => {
@@ -93,8 +99,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         full_name: formData.fullName || undefined,
       });
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       // Error is handled by the auth store
+      // The error state will be set in the store and displayed via the Alert component
     }
   };
 
@@ -124,7 +131,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             className="mb-6"
           />
         )}
-
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
             label="Username"

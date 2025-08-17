@@ -11,6 +11,14 @@ import {
 } from '../types/auth';
 import { authService } from '../services/authService';
 
+// Import toast functionality
+let showErrorToast: ((title: string, message?: string) => void) | null = null;
+
+// Function to set the toast function (will be called from components)
+export const setAuthToastFunction = (toastFn: (title: string, message?: string) => void) => {
+  showErrorToast = toastFn;
+};
+
 interface AuthStore extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
@@ -59,6 +67,12 @@ export const useAuthStore = create<AuthStore>()(
           });
         } catch (error: any) {
           const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Login failed';
+          
+          // Show toast notification
+          if (showErrorToast) {
+            showErrorToast('Login Failed', errorMessage);
+          }
+          
           set({
             isLoading: false,
             error: errorMessage,
@@ -91,6 +105,12 @@ export const useAuthStore = create<AuthStore>()(
           });
         } catch (error: any) {
           const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Registration failed';
+          
+          // Show toast notification
+          if (showErrorToast) {
+            showErrorToast('Registration Failed', errorMessage);
+          }
+          
           set({
             isLoading: false,
             error: errorMessage,

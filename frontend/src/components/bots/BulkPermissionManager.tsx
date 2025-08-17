@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { BotPermission, BulkPermissionUpdate } from '../../types/bot';
 import { permissionService } from '../../services/permissionService';
 import { Button } from '../common/Button';
-import { Alert } from '../common/Alert';
+import { useToastHelpers } from '../common/Toast';
 
 interface BulkPermissionManagerProps {
   botId: string;
@@ -38,6 +38,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
   currentUserRole,
   onUpdateComplete
 }) => {
+  const { error: showErrorToast, success: showSuccessToast } = useToastHelpers();
   const [bulkItems, setBulkItems] = useState<BulkUpdateItem[]>([]);
   const [selectedRole, setSelectedRole] = useState<'admin' | 'editor' | 'viewer'>('viewer');
   const [loading, setLoading] = useState(false);
@@ -118,7 +119,9 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
       );
 
       if (!validation.valid) {
-        setError(`Cannot update ${item.username}: ${validation.error}`);
+        const errorMessage = `Cannot update ${item.username}: ${validation.error}`;
+        setError(errorMessage);
+        showErrorToast('Permission Update Error', errorMessage);
         return;
       }
     }
@@ -147,10 +150,14 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
       
       setResults(result);
       setShowResults(true);
-      setSuccess(`Bulk update completed: ${result.successful.length} successful, ${result.failed.length} failed`);
+      const successMessage = `Bulk update completed: ${result.successful.length} successful, ${result.failed.length} failed`;
+      setSuccess(successMessage);
+      showSuccessToast('Bulk Update Complete', successMessage);
       onUpdateComplete?.();
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to perform bulk update');
+      const errorMessage = err.response?.data?.detail || 'Failed to perform bulk update';
+      setError(errorMessage);
+      showErrorToast('Bulk Update Error', errorMessage);
       console.error('Error performing bulk update:', err);
     } finally {
       setLoading(false);
@@ -370,9 +377,35 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
         </p>
       </div>
 
-      {/* Alerts */}
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
+      {/* Status Messages */}
+      {error && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      {success && (
+        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Warning */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">

@@ -11,7 +11,7 @@ import {
 import { permissionService } from '../../services/permissionService';
 import { websocketService } from '../../services/websocketService';
 import { CollaboratorInviteModal } from './CollaboratorInvite';
-import { Alert } from '../common/Alert';
+import { useToastHelpers } from '../common/Toast';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 
@@ -32,6 +32,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   currentUserRole,
   onPermissionUpdate
 }) => {
+  const { error: showErrorToast, success: showSuccessToast } = useToastHelpers();
   const [viewMode, setViewMode] = useState<ViewMode>({ type: 'collaborators' });
   const [collaborators, setCollaborators] = useState<BotPermission[]>([]);
   // const [permissionHistory, setPermissionHistory] = useState<PermissionHistory[]>([]);
@@ -165,16 +166,22 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       );
 
       if (!validation.valid) {
-        setError(validation.error || 'Invalid permission update');
+        const errorMessage = validation.error || 'Invalid permission update';
+        setError(errorMessage);
+        showErrorToast('Permission Update Error', errorMessage);
         return;
       }
 
       await permissionService.updateCollaboratorRole(botId, userId, newRole);
-      setSuccess(`Role updated successfully to ${permissionService.formatRoleName(newRole)}`);
+      const successMessage = `Role updated successfully to ${permissionService.formatRoleName(newRole)}`;
+      setSuccess(successMessage);
+      showSuccessToast('Role Updated', successMessage);
       loadCollaborators(); // Reload the list
       onPermissionUpdate?.();
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to update role');
+      const errorMessage = err.response?.data?.detail || 'Failed to update role';
+      setError(errorMessage);
+      showErrorToast('Role Update Error', errorMessage);
       console.error('Error updating role:', err);
     } finally {
       setLoading(prev => ({ ...prev, action: false }));
@@ -190,11 +197,15 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       setLoading(prev => ({ ...prev, action: true }));
       setError(null);
       await permissionService.removeCollaborator(botId, userId);
-      setSuccess(`${username} removed from bot successfully`);
+      const successMessage = `${username} removed from bot successfully`;
+      setSuccess(successMessage);
+      showSuccessToast('Collaborator Removed', successMessage);
       loadCollaborators(); // Reload the list
       onPermissionUpdate?.();
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to remove collaborator');
+      const errorMessage = err.response?.data?.detail || 'Failed to remove collaborator';
+      setError(errorMessage);
+      showErrorToast('Remove Collaborator Error', errorMessage);
       console.error('Error removing collaborator:', err);
     } finally {
       setLoading(prev => ({ ...prev, action: false }));
@@ -492,9 +503,35 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
         </p>
       </div>
 
-      {/* Alerts */}
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
+      {/* Status Messages */}
+      {error && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      {success && (
+        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-800">

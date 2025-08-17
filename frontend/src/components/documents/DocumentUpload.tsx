@@ -16,7 +16,7 @@ import {
   validateFile, 
   formatFileSize 
 } from '../../services/documentService';
-import { Alert } from '../common/Alert';
+import { useToastHelpers } from '../common/Toast';
 import { Button } from '../common/Button';
 import { 
   DocumentArrowUpIcon, 
@@ -40,6 +40,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
   multiple = true,
   processImmediately = true
 }) => {
+  const { error: showErrorToast, warning: showWarningToast } = useToastHelpers();
   const [uploadState, setUploadState] = useState<DocumentUploadState>({
     uploading: false,
     progress: 0
@@ -145,6 +146,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       setUploadState({ uploading: false, progress: 0, error: errorMessage });
+      showErrorToast('Upload Error', errorMessage);
       
       if (onUploadError) {
         onUploadError(errorMessage);
@@ -238,48 +240,51 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
         </div>
       </div>
 
-      {/* Upload Error */}
-      {uploadState.error && (
-        <Alert type="error" message={uploadState.error} className="mt-4" />
-      )}
-
-      {/* Validation Errors */}
+      {/* Validation Errors Summary */}
       {Object.keys(validationErrors).length > 0 && (
-        <div className="validation-errors mt-4">
-          <Alert 
-            type="error" 
-            message={
-              <div>
-                <strong>Some files cannot be uploaded:</strong>
-                <ul className="list-disc list-inside mt-2">
-                  {Object.entries(validationErrors).map(([filename, error]) => (
-                    <li key={filename}>{filename}: {error}</li>
-                  ))}
-                </ul>
-              </div>
-            } 
-          />
+        <div className="validation-errors mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                Some files cannot be uploaded:
+              </p>
+              <ul className="mt-1 text-sm text-red-600 dark:text-red-400 list-disc list-inside">
+                {Object.entries(validationErrors).map(([filename, error]) => (
+                  <li key={filename}>{filename}: {error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Validation Warnings */}
+      {/* Validation Warnings Summary */}
       {Object.keys(validationWarnings).length > 0 && (
-        <div className="validation-warnings mt-4">
-          <Alert 
-            type="warning" 
-            message={
-              <div>
-                <strong>Warnings:</strong>
-                <ul className="list-disc list-inside mt-2">
-                  {Object.entries(validationWarnings).map(([filename, warnings]) => (
-                    <li key={filename}>
-                      {filename}: {warnings.join(', ')}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            } 
-          />
+        <div className="validation-warnings mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                Warnings:
+              </p>
+              <ul className="mt-1 text-sm text-yellow-600 dark:text-yellow-400 list-disc list-inside">
+                {Object.entries(validationWarnings).map(([filename, warnings]) => (
+                  <li key={filename}>
+                    {filename}: {warnings.join(', ')}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 

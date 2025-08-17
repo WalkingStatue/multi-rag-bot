@@ -16,7 +16,7 @@ import {
   getFileTypeInfo
 } from '../../services/documentService';
 import { Button } from '../common/Button';
-import { Alert } from '../common/Alert';
+import { useToastHelpers } from '../common/Toast';
 import {
   XMarkIcon,
   MagnifyingGlassIcon,
@@ -38,6 +38,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
   documentId,
   onClose
 }) => {
+  const { error: showErrorToast } = useToastHelpers();
   const [document, setDocument] = useState<DocumentDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +60,9 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
       }
       setError(null);
     } catch (error) {
-      setError('Failed to load document details.');
+      const errorMessage = 'Failed to load document details.';
+      setError(errorMessage);
+      showErrorToast('Document Error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -86,7 +89,9 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
       );
       setSearchResults(response.results);
     } catch (error) {
-      setSearchError('Search failed. Please try again.');
+      const errorMessage = 'Search failed. Please try again.';
+      setSearchError(errorMessage);
+      showErrorToast('Search Error', errorMessage);
     } finally {
       setSearching(false);
     }
@@ -149,8 +154,18 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
         <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl p-6 max-w-md w-full mx-4">
-          <Alert type="error" message={error || 'Document not found'} />
-          <div className="mt-4 flex justify-end">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mb-4">
+              <svg className="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              {error ? 'Error Loading Document' : 'Document Not Found'}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {error || 'The requested document could not be found.'}
+            </p>
             <Button onClick={onClose}>Close</Button>
           </div>
         </div>
@@ -220,7 +235,18 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 </Button>
               </div>
               {searchError && (
-                <Alert type="error" message={searchError} className="mt-2" />
+                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700 dark:text-red-300">{searchError}</p>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
