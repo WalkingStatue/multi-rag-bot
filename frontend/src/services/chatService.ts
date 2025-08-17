@@ -293,6 +293,62 @@ export class ChatService {
     const response = await apiClient.get('/bots/embeddings/providers');
     return response.data;
   }
+
+  /**
+   * Generate a conversation title based on the first user message
+   */
+  generateConversationTitle(firstMessage: string): string {
+    if (!firstMessage || firstMessage.trim().length === 0) {
+      return 'New Conversation';
+    }
+
+    // Clean the message
+    let title = firstMessage.trim();
+    
+    // Remove common prefixes
+    title = title.replace(/^(hi|hello|hey|hi there|hello there)[,.!?\s]*/i, '');
+    title = title.replace(/^(can you|could you|please|help me)[\s]*/i, '');
+    
+    // Truncate to a reasonable length (50 characters)
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+    
+    // Capitalize first letter
+    if (title.length > 0) {
+      title = title.charAt(0).toUpperCase() + title.slice(1);
+    }
+    
+    // If the cleaned title is too short or empty, use a fallback
+    if (title.length < 3) {
+      title = 'New Conversation';
+    }
+    
+    return title;
+  }
+
+  /**
+   * Auto-update session title based on first message
+   */
+  async updateSessionTitleFromMessage(
+    sessionId: string, 
+    firstMessage: string
+  ): Promise<ConversationSession | null> {
+    try {
+      // Generate title from the message
+      const generatedTitle = this.generateConversationTitle(firstMessage);
+      
+      // Only update if it's not the default title
+      if (generatedTitle !== 'New Conversation') {
+        return await this.updateSession(sessionId, generatedTitle);
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('Failed to auto-update session title:', error);
+      return null;
+    }
+  }
 }
 
 // Export singleton instance

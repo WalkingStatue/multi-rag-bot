@@ -7,10 +7,11 @@ import { ChatWindow } from '../components/chat/ChatWindow';
 import { ChatSearch } from '../components/chat/ChatSearch';
 import { useChatStore } from '../stores/chatStore';
 import { botService } from '../services/botService';
-import { Button } from '../components/common';
+import { Button, PageLoading, PageError } from '../components/common';
 import { ChatLayout } from '../layouts';
 import { BotResponse } from '../types/bot';
 import { ConversationSearchResult } from '../types/chat';
+import { DocumentTextIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export const ChatPage: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
@@ -19,7 +20,7 @@ export const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { setCurrentSession, setCurrentBot } = useChatStore();
+  const { setCurrentSession, setCurrentBot, setHighlightedMessage, clearHighlightedMessage } = useChatStore();
 
   useEffect(() => {
     const loadBot = async () => {
@@ -55,37 +56,33 @@ export const ChatPage: React.FC = () => {
   const handleSearchResultSelect = (result: ConversationSearchResult) => {
     // Navigate to the session
     setCurrentSession(result.session_id);
+    
+    // Highlight and scroll to the specific message
+    setHighlightedMessage(result.message_id);
+    
+    // Clear highlight after a delay
+    setTimeout(() => {
+      clearHighlightedMessage();
+    }, 5000);
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading chat...</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <PageLoading message="Loading chat..." />
       </div>
     );
   }
 
   if (error || !bot) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load Chat</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Back to Dashboard
-          </button>
-        </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <PageError
+          title="Unable to Load Chat"
+          message={error || 'Bot not found'}
+          actionLabel="Back to Dashboard"
+          onAction={() => navigate('/dashboard')}
+        />
       </div>
     );
   }
@@ -99,9 +96,7 @@ export const ChatPage: React.FC = () => {
         onClick={() => navigate(`/bots/${bot.id}/documents`)}
         className="border-accent-300 text-accent-700 hover:bg-accent-50 dark:bg-neutral-900 dark:border-accent-800 dark:text-accent-300"
       >
-        <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
+        <DocumentTextIcon className="-ml-0.5 mr-2 h-4 w-4" />
         Documents
       </Button>
       
@@ -112,9 +107,7 @@ export const ChatPage: React.FC = () => {
           onClick={() => navigate(`/bots/${bot.id}/collaboration`)}
           className="border-primary-300 text-primary-700 hover:bg-primary-50 dark:bg-neutral-900 dark:border-primary-800 dark:text-primary-300"
         >
-          <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-          </svg>
+          <UserGroupIcon className="-ml-0.5 mr-2 h-4 w-4" />
           Collaboration
         </Button>
       )}

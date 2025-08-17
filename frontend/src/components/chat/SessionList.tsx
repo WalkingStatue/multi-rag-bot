@@ -97,11 +97,11 @@ export const SessionList: React.FC<SessionListProps> = ({
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Create new session button */}
-      <div className="p-3 border-b border-gray-200">
+      <div className="p-3">
         <button
           onClick={handleCreateSession}
           disabled={isCreating}
-          className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
+          className="w-full bg-primary-600 dark:bg-primary-600 text-white px-3 py-2 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
         >
           {isCreating ? (
             <span className="flex items-center justify-center">
@@ -125,14 +125,14 @@ export const SessionList: React.FC<SessionListProps> = ({
       {/* Session list */}
       <div className="flex-1 overflow-y-auto">
         {sessions.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
             <p className="text-sm">No conversations yet</p>
-            <p className="text-xs text-gray-400 mt-1">Start a new conversation to begin</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Start a new conversation to begin</p>
           </div>
         ) : (
           <div className="space-y-1 p-2">
@@ -141,8 +141,8 @@ export const SessionList: React.FC<SessionListProps> = ({
                 key={session.id}
                 className={`group relative p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
                   session.id === currentSessionId
-                    ? 'bg-blue-50 border border-blue-200'
-                    : 'hover:bg-gray-50 border border-transparent'
+                    ? 'bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 border border-transparent hover:border-gray-200 dark:hover:border-gray-700'
                 }`}
                 onClick={() => handleSelectSession(session)}
               >
@@ -152,7 +152,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                       type="text"
                       value={editTitle}
                       onChange={(e) => setEditTitle(e.target.value)}
-                      className="w-full text-sm font-medium bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleSaveTitle(session.id);
@@ -166,7 +166,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleSaveTitle(session.id)}
-                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                        className="text-xs bg-primary-600 dark:bg-primary-600 text-white px-2 py-1 rounded hover:bg-primary-700 dark:hover:bg-primary-700 transition-colors"
                       >
                         Save
                       </button>
@@ -175,7 +175,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                           setEditingSessionId(null);
                           setEditTitle('');
                         }}
-                        className="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded hover:bg-gray-400"
+                        className="text-xs bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
                       >
                         Cancel
                       </button>
@@ -185,10 +185,10 @@ export const SessionList: React.FC<SessionListProps> = ({
                   <>
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-gray-900 truncate">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                           {session.title || 'Untitled Conversation'}
                         </h4>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {formatSessionTime(session.updated_at)}
                         </p>
                       </div>
@@ -200,7 +200,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                             e.stopPropagation();
                             handleEditTitle(session);
                           }}
-                          className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded transition-colors"
                           title="Edit title"
                         >
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                             e.stopPropagation();
                             handleDeleteSession(session.id);
                           }}
-                          className="p-1 text-gray-400 hover:text-red-600 rounded"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded transition-colors"
                           title="Delete conversation"
                         >
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

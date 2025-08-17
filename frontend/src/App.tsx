@@ -17,6 +17,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { CollaborationPage } from './pages/CollaborationPage';
 import DocumentManagementPage from './pages/DocumentManagementPage';
 import { ChatPage } from './pages/ChatPage';
+import { BotIntegrationsPage } from './pages/BotIntegrationsPage';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -57,9 +58,11 @@ function App() {
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/bots" element={<DashboardPage />} />
               <Route path="/bots/:botId/chat" element={<ChatPage />} />
               <Route path="/bots/:botId/documents" element={<DocumentManagementPage />} />
               <Route path="/bots/:botId/collaboration" element={<CollaborationPage />} />
+              <Route path="/bots/:botId/integrations" element={<BotIntegrationsPage />} />
               <Route path="/" element={<DashboardPage />} />
               <Route path="*" element={
                 <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center px-4">

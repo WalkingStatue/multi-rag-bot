@@ -422,9 +422,7 @@ class AsyncQdrantConnectionPool:
                 # Create new connection if pool is empty and under limit
                 async with self._lock:
                     if self._connections_created < self.max_connections:
-                        connection = await asyncio.get_event_loop().run_in_executor(
-                            self._executor, self._create_connection
-                        )
+                        connection = await self._create_connection()
                         self._connections_created += 1
                     else:
                         # Wait for available connection
@@ -475,10 +473,14 @@ class AsyncQdrantConnectionPool:
         operation_timeout = timeout or self.timeout
         
         try:
+            # Create a wrapper function that includes kwargs
+            def execute_operation():
+                return operation(*args, **kwargs)
+            
             # Execute the synchronous operation in thread pool
             result = await asyncio.wait_for(
                 asyncio.get_event_loop().run_in_executor(
-                    self._executor, operation, *args, **kwargs
+                    self._executor, execute_operation
                 ),
                 timeout=operation_timeout
             )

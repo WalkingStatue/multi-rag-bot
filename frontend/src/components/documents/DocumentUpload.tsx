@@ -171,13 +171,13 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
   const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
 
   return (
-    <div className="document-upload bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="document-upload bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
       <div className="upload-header mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <DocumentArrowUpIcon className="h-5 w-5 mr-2 text-blue-600" />
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+          <DocumentArrowUpIcon className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
           Upload Documents
         </h3>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
           Supported formats: {supportedExtensions} | Max size: {formatFileSize(FILE_SIZE_LIMITS.MAX_FILE_SIZE)} per file
         </p>
       </div>
@@ -187,7 +187,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
         className={`
           upload-dropzone relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
           ${dragActive 
-            ? 'border-blue-400 bg-blue-50' 
+            ? 'border-primary-400 bg-primary-50' 
             : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
           }
           ${uploadState.uploading ? 'pointer-events-none opacity-75' : ''}
@@ -210,12 +210,12 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
         <div className="upload-content">
           {uploadState.uploading ? (
             <div className="upload-progress">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-700 font-medium">Uploading documents...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400 mx-auto mb-4"></div>
+              <p className="text-gray-700 dark:text-gray-300 font-medium">Uploading documents...</p>
               {uploadState.progress > 0 && (
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
                   <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                    className="bg-primary-600 dark:bg-primary-400 h-2 rounded-full transition-all duration-300" 
                     style={{ width: `${uploadState.progress}%` }}
                   ></div>
                 </div>
@@ -223,14 +223,14 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
             </div>
           ) : (
             <div className="drop-message">
-              <DocumentArrowUpIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-lg text-gray-700 mb-2">
+              <DocumentArrowUpIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <p className="text-lg text-gray-700 dark:text-gray-300 mb-2">
                 {dragActive 
                   ? 'Drop files here...' 
                   : 'Drag and drop files here, or click to select'
                 }
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {multiple ? 'Multiple files allowed' : 'Single file only'}
               </p>
             </div>
@@ -287,11 +287,11 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
       {selectedFiles.length > 0 && (
         <div className="selected-files mt-6">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-md font-medium text-gray-900">
+            <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
               Selected Files ({selectedFiles.length})
             </h4>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 Total size: {formatFileSize(totalSize)}
               </span>
               <Button
@@ -309,25 +309,25 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
             {selectedFiles.map((file, index) => (
               <div 
                 key={`${file.name}-${index}`} 
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
               >
                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {file.type.includes('pdf') ? (
-                      <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
-                        <span className="text-xs font-medium text-red-600">PDF</span>
+                      <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded flex items-center justify-center">
+                        <span className="text-xs font-medium text-red-600 dark:text-red-400">PDF</span>
                       </div>
                     ) : (
-                      <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                        <span className="text-xs font-medium text-blue-600">TXT</span>
+                      <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded flex items-center justify-center">
+                        <span className="text-xs font-medium text-primary-600 dark:text-primary-400">TXT</span>
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {file.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
@@ -350,7 +350,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
       {/* Upload Actions */}
       {selectedFiles.length > 0 && (
-        <div className="upload-actions mt-6 pt-4 border-t border-gray-200">
+        <div className="upload-actions mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <label className="flex items-center">
@@ -362,9 +362,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
                     // For now, we'll keep it as a visual indicator
                   }}
                   disabled={uploadState.uploading}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-800"
                 />
-                <span className="ml-2 text-sm text-gray-700">Process immediately</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Process immediately</span>
               </label>
             </div>
             

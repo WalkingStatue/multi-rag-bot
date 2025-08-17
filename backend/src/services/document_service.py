@@ -282,7 +282,7 @@ class DocumentService:
                 chunk_data.append(chunk_info)
             
             # Ensure vector collection exists for this bot with proper validation
-            if self.vector_service and vector_chunks:
+            if self.vector_service and embeddings:
                 # Get embedding dimension from the first embedding
                 embedding_dimension = len(embeddings[0]) if embeddings else 768
                 

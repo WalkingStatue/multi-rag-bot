@@ -6,6 +6,7 @@
  */
 import React from 'react';
 import { TopNavigation } from '../components/common/TopNavigation';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export interface MainLayoutProps {
   children: React.ReactNode;
@@ -89,9 +90,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
                       className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-150"
                       aria-label="Go back"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
+                      <ArrowLeftIcon className="w-5 h-5" />
                     </button>
                   )}
                   <div>

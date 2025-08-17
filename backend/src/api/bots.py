@@ -42,7 +42,7 @@ async def create_bot(
     
     The user creating the bot automatically becomes the owner.
     """
-    bot = bot_service.create_bot(current_user.id, bot_config)
+    bot = await bot_service.create_bot(current_user.id, bot_config)
     return BotResponse.model_validate(bot)
 
 
@@ -100,7 +100,7 @@ async def update_bot(
     
     Requires admin role or higher.
     """
-    bot = bot_service.update_bot(bot_id, current_user.id, updates)
+    bot = await bot_service.update_bot(bot_id, current_user.id, updates)
     return BotResponse.model_validate(bot)
 
 

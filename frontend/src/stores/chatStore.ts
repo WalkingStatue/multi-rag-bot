@@ -20,6 +20,7 @@ interface ChatStore {
   currentBotId: string | null;
   uiState: ChatUIState;
   lastError: string | null;
+  highlightedMessageId: string | null;
 
   // Actions
   setSessions: (sessions: ConversationSession[]) => void;
@@ -45,6 +46,8 @@ interface ChatStore {
   setSearchResults: (results: ConversationSearchResult[]) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  setHighlightedMessage: (messageId: string | null) => void;
+  clearHighlightedMessage: () => void;
   
   // Computed
   getCurrentSession: () => ConversationSession | null;
@@ -61,6 +64,7 @@ export const useChatStore = create<ChatStore>()(
       currentSessionId: null,
       currentBotId: null,
       lastError: null,
+      highlightedMessageId: null,
       uiState: {
         isLoading: false,
         isTyping: false,
@@ -205,6 +209,9 @@ export const useChatStore = create<ChatStore>()(
 
       setError: (error) => set({ lastError: error }),
       clearError: () => set({ lastError: null }),
+      
+      setHighlightedMessage: (messageId) => set({ highlightedMessageId: messageId }),
+      clearHighlightedMessage: () => set({ highlightedMessageId: null }),
 
       // Computed getters
       getCurrentSession: () => {

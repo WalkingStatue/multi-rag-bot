@@ -17,6 +17,7 @@ import { ProfilePage } from '../pages/ProfilePage';
 import { CollaborationPage } from '../pages/CollaborationPage';
 import DocumentManagementPage from '../pages/DocumentManagementPage';
 import { ChatPage } from '../pages/ChatPage';
+import { BotIntegrationsPage } from '../pages/BotIntegrationsPage';
 
 // Route wrapper with error boundary and suspense
 const RouteWrapper: React.FC<{
@@ -121,6 +122,14 @@ export const routeConfig: RouteObject[] = [
         ),
       },
       {
+        path: 'bots',
+        element: (
+          <ProtectedRouteWrapper pageName="Bots">
+            <DashboardPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
+      {
         path: 'profile',
         element: (
           <ProtectedRouteWrapper pageName="Profile">
@@ -151,6 +160,14 @@ export const routeConfig: RouteObject[] = [
         element: (
           <ProtectedRouteWrapper pageName="Collaboration">
             <CollaborationPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
+      {
+        path: 'bots/:botId/integrations',
+        element: (
+          <ProtectedRouteWrapper pageName="Integrations">
+            <BotIntegrationsPage />
           </ProtectedRouteWrapper>
         ),
       },
@@ -250,6 +267,11 @@ export const routeMetadata: Record<string, {
     description: 'Your bot management dashboard',
     requireAuth: true,
   },
+  '/bots': {
+    title: 'Bots',
+    description: 'Create, edit and manage your bots',
+    requireAuth: true,
+  },
   '/profile': {
     title: 'Profile',
     description: 'Manage your account settings',
@@ -268,6 +290,11 @@ export const routeMetadata: Record<string, {
   '/bots/:botId/collaboration': {
     title: 'Collaboration',
     description: 'Manage bot collaborators',
+    requireAuth: true,
+  },
+  '/bots/:botId/integrations': {
+    title: 'Integrations',
+    description: 'Embed your bot or use the API',
     requireAuth: true,
   },
   '/admin': {

@@ -7,6 +7,8 @@ import { chatService } from '../../services/chatService';
 import { chatWebSocketService } from '../../services/chatWebSocketService';
 import { MessageWithStatus } from '../../types/chat';
 import { useAuth } from '../../hooks/useAuth';
+import { Button } from '../common/Button';
+import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface MessageInputProps {
   botId: string;
@@ -30,7 +32,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   // Minimum time between messages to prevent rate limiting (in milliseconds)
   const MIN_MESSAGE_INTERVAL = 3000; // Increased to 3 seconds
   
-  const { addMessage, updateMessage, setTyping } = useChatStore();
+  const { addMessage, updateMessage, setTyping, getCurrentMessages, updateSession } = useChatStore();
 
   // Auto-resize textarea
   useEffect(() => {
@@ -127,6 +129,24 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         tempId: undefined
       });
 
+      // Auto-generate title for new conversations
+      // Check if this is likely the first user message (only 1 message in session)
+      const currentMessages = getCurrentMessages();
+      const userMessages = currentMessages.filter(msg => msg.role === 'user');
+      
+      if (userMessages.length <= 1) {
+        // This is the first user message, auto-generate title
+        try {
+          const updatedSession = await chatService.updateSessionTitleFromMessage(sessionId, messageContent);
+          if (updatedSession) {
+            // Update the session in the store
+            updateSession(sessionId, { title: updatedSession.title });
+          }
+        } catch (error) {
+          console.warn('Failed to auto-generate conversation title:', error);
+        }
+      }
+
       // Note: Assistant response will come through WebSocket, so we don't add it here
       // The HTTP response might contain the assistant message, but we ignore it to prevent duplicates
 
@@ -181,7 +201,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <div className={`border-t border-gray-200 p-4 ${className}`}>
+    <div className={`border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 ${className}`}>
       <form onSubmit={handleSubmit} className="flex items-end space-x-3">
         <div className="flex-1">
           <textarea
@@ -190,28 +210,23 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
-            className="w-full resize-none border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-h-32"
+            className="w-full resize-none border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent max-h-32"
             rows={1}
             disabled={isSending}
           />
         </div>
         
-        <button
+        <Button
           type="submit"
           disabled={!message.trim() || isSending}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          isLoading={isSending}
+          variant="primary"
+          size="md"
         >
-          {isSending ? (
-            <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+          {!isSending && (
+            <PaperAirplaneIcon className="w-5 h-5" />
           )}
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -4,6 +4,7 @@
  * Unified dashboard with consistent styling and improved UX.
  */
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
@@ -15,6 +16,7 @@ import { MainLayout } from '../layouts';
 import { BotWithRole } from '../types/bot';
 
 export const DashboardPage: React.FC = () => {
+  const location = useLocation();
   const { /* user */ } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -28,12 +30,25 @@ export const DashboardPage: React.FC = () => {
   });
 
   // Get current view from URL parameters
-  const currentView = searchParams.get('view') || 'dashboard';
+  const currentView = (location.pathname === '/bots') ? 'bots' : (searchParams.get('view') || 'dashboard');
+  const currentAction = searchParams.get('action');
   
   // Get page title and subtitle based on current view
   const getPageHeader = () => {
     switch (currentView) {
       case 'bots':
+        // Handle sub-actions for bot management
+        if (currentAction === 'create') {
+          return {
+            title: 'Create New Bot',
+            subtitle: 'Build a new AI assistant with custom settings',
+          };
+        } else if (currentAction === 'edit') {
+          return {
+            title: 'Edit Bot',
+            subtitle: 'Modify your bot configuration and settings',
+          };
+        }
         return {
           title: 'Bot Management',
           subtitle: 'Create, edit and manage your bots',
@@ -98,11 +113,11 @@ export const DashboardPage: React.FC = () => {
   };
 
   const handleCreateBot = () => {
-    navigate('/dashboard?view=bots&action=create');
+    navigate('/bots?action=create');
   };
 
   const handleManageBots = () => {
-    navigate('/dashboard?view=bots');
+    navigate('/bots');
   };
 
   const handleManageAPIKeys = () => {
@@ -366,7 +381,7 @@ export const DashboardPage: React.FC = () => {
                 padding="md"
                 hover={true}
                 interactive={true}
-                onClick={() => navigate('/dashboard?view=bots&action=edit&id=' + botWithRole.bot.id)}
+                onClick={() => navigate('/bots?action=edit&id=' + botWithRole.bot.id)}
                 className="group"
               >
                 <div className="flex items-center justify-between">

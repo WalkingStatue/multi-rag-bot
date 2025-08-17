@@ -49,13 +49,15 @@ export interface ChatResponse {
 }
 
 export interface ConversationSearchResult {
+  message_id: string;
   session_id: string;
   bot_id: string;
   bot_name: string;
-  title?: string;
-  message_content: string;
-  message_role: string;
+  session_title?: string;
+  role: string;
+  content: string;
   created_at: string;
+  metadata?: Record<string, any>;
   relevance_score?: number;
 }
 

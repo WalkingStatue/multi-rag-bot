@@ -1,9 +1,10 @@
 /**
  * Individual message bubble component
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { MessageWithStatus } from '../../types/chat';
+import { useChatStore } from '../../stores/chatStore';
 
 interface MessageBubbleProps {
   message: MessageWithStatus;
@@ -12,18 +13,34 @@ interface MessageBubbleProps {
   className?: string;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({
+export const MessageBubble = forwardRef<HTMLDivElement, MessageBubbleProps>(({
   message,
   showTimestamp = false,
   // isLastMessage = false,
   className = ''
-}) => {
+}, ref) => {
   // const { user } = useAuth();
   const [showDetails, setShowDetails] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const { highlightedMessageId } = useChatStore();
   
   const isUser = message.role === 'user';
   // const isOwn = message.user_id === user?.id;
   const isSystem = message.role === 'system';
+  
+  // Handle highlighting effect
+  useEffect(() => {
+    if (highlightedMessageId === message.id) {
+      setIsHighlighted(true);
+      // Clear highlight after 3 seconds
+      const timer = setTimeout(() => {
+        setIsHighlighted(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsHighlighted(false);
+    }
+  }, [highlightedMessageId, message.id]);
 
   const getStatusIcon = () => {
     switch (message.status) {
@@ -81,10 +98,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   }
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} ${className}`}>
+    <div ref={ref} className={`flex ${isUser ? 'justify-end' : 'justify-start'} ${className} ${isHighlighted ? 'animate-pulse' : ''}`}>
       <div className={`max-w-xs lg:max-w-md ${isUser ? 'order-2' : 'order-1'}`}>
         {showTimestamp && (
-          <div className="text-xs text-gray-500 text-center mb-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 text-center mb-2">
             {formatTimestamp(message.created_at)}
           </div>
         )}
@@ -93,8 +110,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           className={`px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
             isUser
               ? 'bg-primary-600 text-white rounded-br-sm dark:bg-primary-500'
-              : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 border dark:border-gray-800 rounded-bl-sm'
-          } ${showDetails ? 'shadow-lg' : 'hover:shadow-md'}`}
+              : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-bl-sm shadow-sm'
+          } ${showDetails ? 'shadow-lg' : 'hover:shadow-md'} ${
+            isHighlighted 
+              ? isUser 
+                ? 'ring-4 ring-yellow-400/50 bg-primary-500 shadow-xl' 
+                : 'ring-4 ring-yellow-400/50 bg-yellow-50 dark:bg-yellow-900/20 shadow-xl'
+              : ''
+          }`}
           onClick={() => setShowDetails(!showDetails)}
         >
           <div className="break-words">
@@ -118,7 +141,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       <code className={`px-1 py-0.5 rounded text-xs font-mono ${
                         isUser 
                           ? 'bg-primary-500 text-primary-100' 
-                          : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100'
                       }`}>
                         {children}
                       </code>
@@ -126,7 +149,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       <code className={`block p-2 rounded text-xs font-mono whitespace-pre-wrap overflow-x-auto mt-2 ${
                         isUser 
                           ? 'bg-primary-500 text-primary-100' 
-                          : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100'
                       }`}>
                         {children}
                       </code>
@@ -136,7 +159,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     <pre className={`p-2 rounded text-xs font-mono whitespace-pre-wrap overflow-x-auto mt-2 ${
                       isUser 
                         ? 'bg-primary-500 text-primary-100' 
-                        : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100'
                     }`}>
                       {children}
                     </pre>
@@ -180,7 +203,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     <th className={`px-2 py-1 border font-semibold ${
                       isUser 
                         ? 'border-primary-400 bg-primary-500' 
-                        : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                        : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700'
                     }`}>
                       {children}
                     </th>
@@ -253,4 +276,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </div>
     </div>
   );
-};
+});
+
+MessageBubble.displayName = 'MessageBubble';

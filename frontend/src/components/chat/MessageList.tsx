@@ -1,9 +1,10 @@
 /**
  * Message list component for displaying chat messages
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { MessageWithStatus } from '../../types/chat';
 import { MessageBubble } from './MessageBubble';
+import { useChatStore } from '../../stores/chatStore';
 
 interface MessageListProps {
   messages: MessageWithStatus[];
@@ -16,30 +17,64 @@ export const MessageList: React.FC<MessageListProps> = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [lastScrolledToMessage, setLastScrolledToMessage] = useState<string | null>(null);
+  
+  const { highlightedMessageId, clearHighlightedMessage } = useChatStore();
 
-  // Auto-scroll to bottom when new messages arrive
+  // Callback to register message refs
+  const setMessageRef = useCallback((messageId: string, element: HTMLDivElement | null) => {
+    if (element) {
+      messageRefs.current.set(messageId, element);
+    } else {
+      messageRefs.current.delete(messageId);
+    }
+  }, []);
+
+  // Scroll to a specific message
+  const scrollToMessage = useCallback((messageId: string) => {
+    const messageElement = messageRefs.current.get(messageId);
+    const container = containerRef.current;
+    
+    if (messageElement && container) {
+      // Calculate offset to center the message in the viewport
+      const containerRect = container.getBoundingClientRect();
+      const messageRect = messageElement.getBoundingClientRect();
+      const containerScrollTop = container.scrollTop;
+      const messageOffsetTop = messageElement.offsetTop;
+      const containerHeight = container.clientHeight;
+      const messageHeight = messageRect.height;
+      
+      // Center the message in the viewport
+      const targetScrollTop = messageOffsetTop - (containerHeight / 2) + (messageHeight / 2);
+      
+      container.scrollTo({
+        top: targetScrollTop,
+        behavior: 'smooth'
+      });
+      
+      setLastScrolledToMessage(messageId);
+    }
+  }, []);
+
+  // Handle scrolling to highlighted message
+  useEffect(() => {
+    if (highlightedMessageId && highlightedMessageId !== lastScrolledToMessage) {
+      // Small delay to ensure message refs are updated
+      const timer = setTimeout(() => {
+        scrollToMessage(highlightedMessageId);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedMessageId, lastScrolledToMessage, scrollToMessage]);
+
+  // Auto-scroll to bottom when new messages arrive (but only if not viewing a specific message)
   useEffect(() => {
     const scrollToBottom = () => {
-      if (containerRef.current) {
+      if (containerRef.current && !highlightedMessageId) {
         const container = containerRef.current;
         
-        console.log('MessageList scroll before:', {
-          scrollTop: container.scrollTop,
-          scrollHeight: container.scrollHeight,
-          clientHeight: container.clientHeight,
-          messagesCount: messages.length
-        });
-        
         // Force scroll to bottom
-        container.scrollTop = container.scrollHeight;
-        
-        console.log('MessageList scroll after:', {
-          scrollTop: container.scrollTop,
-          scrollHeight: container.scrollHeight,
-          clientHeight: container.clientHeight
-        });
-        
-        // Also try using scrollTo for better browser compatibility
         container.scrollTo({
           top: container.scrollHeight,
           behavior: 'smooth'
@@ -51,14 +86,21 @@ export const MessageList: React.FC<MessageListProps> = ({
     const timeoutId = setTimeout(scrollToBottom, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [messages]);
+  }, [messages, highlightedMessageId]);
+
+  // Clear scroll tracking when highlight is cleared
+  useEffect(() => {
+    if (!highlightedMessageId) {
+      setLastScrolledToMessage(null);
+    }
+  }, [highlightedMessageId]);
 
   if (messages.length === 0) {
     return (
-      <div className={`flex-1 flex items-center justify-center text-gray-500 ${className}`}>
+      <div className={`flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 ${className}`}>
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
@@ -84,6 +126,11 @@ export const MessageList: React.FC<MessageListProps> = ({
         return (
           <MessageBubble
             key={message.id || message.tempId || `msg-${index}`}
+            ref={(el) => {
+              if (message.id) {
+                setMessageRef(message.id, el);
+              }
+            }}
             message={message}
             showTimestamp={showTimestamp}
             isLastMessage={isLastMessage}

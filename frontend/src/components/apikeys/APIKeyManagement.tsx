@@ -165,17 +165,10 @@ export const APIKeyManagement: React.FC = () => {
   }, [error]);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">API Key Management</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mt-1">
-            Manage your API keys for different LLM providers
-          </p>
-        </div>
-
-        {viewMode === 'list' && (
+    <div className="space-y-6">
+      {/* Action Button */}
+      {viewMode === 'list' && (
+        <div className="flex justify-end">
           <button
             onClick={() => setViewMode('add')}
             disabled={Object.keys(getAvailableProviders()).length === 0}
@@ -183,8 +176,8 @@ export const APIKeyManagement: React.FC = () => {
           >
             Add API Key
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Messages */}
       {error && (

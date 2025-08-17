@@ -6,6 +6,8 @@ import { BotWithRole, BotListFilters, BotDeleteConfirmation } from '../../types/
 import { botService } from '../../services/botService';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
+import { Modal } from '../common/Modal';
+import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon, ComputerDesktopIcon, ChatBubbleLeftRightIcon, DocumentTextIcon, PencilIcon, UserGroupIcon, ArrowsRightLeftIcon, TrashIcon, XMarkIcon, ExclamationTriangleIcon, EllipsisVerticalIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 interface BotListProps {
   bots: BotWithRole[];
@@ -17,6 +19,8 @@ interface BotListProps {
   onDeleteBot: (botId: string) => void;
   onTransferOwnership: (bot: BotWithRole) => void;
   onManageCollaboration?: (bot: BotWithRole) => void;
+  onIntegrations?: (bot: BotWithRole) => void;
+  onDocuments?: (bot: BotWithRole) => void;
 }
 
 export const BotList: React.FC<BotListProps> = ({
@@ -29,10 +33,13 @@ export const BotList: React.FC<BotListProps> = ({
   onDeleteBot,
   onTransferOwnership,
   onManageCollaboration,
+  onIntegrations,
+  onDocuments,
 }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
   const [deleteInfo, setDeleteInfo] = useState<BotDeleteConfirmation | null>(null);
   const [isLoadingDeleteInfo, setIsLoadingDeleteInfo] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({ ...filters, search: e.target.value });
@@ -171,9 +178,7 @@ export const BotList: React.FC<BotListProps> = ({
                className="h-10 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 py-2 placeholder:text-gray-400 focus-visible:ring focus-visible:ring-offset-0 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
               </div>
             </div>
 
@@ -191,7 +196,7 @@ export const BotList: React.FC<BotListProps> = ({
               <option value="viewer">Viewer</option>
             </select>
             <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+              <ChevronDownIcon className="h-4 w-4" />
             </span>
             </div>
 
@@ -209,7 +214,7 @@ export const BotList: React.FC<BotListProps> = ({
               <option value="openrouter">OpenRouter</option>
             </select>
             <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+              <ChevronDownIcon className="h-4 w-4" />
             </span>
             </div>
 
@@ -228,16 +233,14 @@ export const BotList: React.FC<BotListProps> = ({
               <option value="name-desc">Name Z-A</option>
             </select>
             <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+              <ChevronDownIcon className="h-4 w-4" />
             </span>
             </div>
           </div>
 
           {/* Create Bot Button */}
           <Button onClick={onCreateBot}>
-            <svg className="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
+            <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
             Create Bot
           </Button>
         </div>
@@ -247,9 +250,7 @@ export const BotList: React.FC<BotListProps> = ({
       {bots.length === 0 ? (
         <Card padding="lg" className="text-center">
           <div className="mx-auto h-24 w-24 text-gray-400">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            <ComputerDesktopIcon className="h-24 w-24" />
           </div>
           <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No Bots Found</h3>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
@@ -316,81 +317,129 @@ export const BotList: React.FC<BotListProps> = ({
 
                 {/* Actions */}
                 <div className="flex items-center space-x-2">
-                  {/* Chat Button - Always visible for users with view permissions */}
+                  {/* Chat Button - Primary action, always visible */}
                   <a href={`/bots/${botWithRole.bot.id}/chat`}>
                     <Button variant="success" size="sm">
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
+                      <ChatBubbleLeftRightIcon className="-ml-0.5 mr-2 h-4 w-4" />
                       Chat
                     </Button>
                   </a>
 
-                  {/* Documents Button - Visible for users with view permissions */}
-                  <a href={`/bots/${botWithRole.bot.id}/documents`}>
-                    <Button variant="outline" size="sm">
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Documents
-                    </Button>
-                  </a>
-
-                  {/* Edit Button */}
+                  {/* Edit Button - Only show for owners/admins */}
                   {(botWithRole.role === 'owner' || botWithRole.role === 'admin') && (
                     <Button
                       onClick={() => onEditBot(botWithRole)}
                       variant="outline"
                       size="sm"
                     >
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
+                      <PencilIcon className="-ml-0.5 mr-2 h-4 w-4" />
                       Edit
                     </Button>
                   )}
 
-                  {/* Manage Collaboration Button */}
-                  {botWithRole.bot.allow_collaboration && onManageCollaboration && (
+                  {/* More Options Dropdown */}
+                  <div className="relative">
                     <Button
-                      onClick={() => onManageCollaboration(botWithRole)}
+                      onClick={() => setOpenDropdown(openDropdown === botWithRole.bot.id ? null : botWithRole.bot.id)}
                       variant="outline"
                       size="sm"
+                      className="px-2"
                     >
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                      </svg>
-                      Collaboration
+                      <EllipsisVerticalIcon className="h-4 w-4" />
                     </Button>
-                  )}
 
-                  {/* Transfer Ownership Button */}
-                  {botWithRole.role === 'owner' && (
-                    <Button
-                      onClick={() => onTransferOwnership(botWithRole)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      Transfer
-                    </Button>
-                  )}
-
-                  {/* Delete Button */}
-                  {botWithRole.role === 'owner' && (
-                    <Button
-                      onClick={() => handleDeleteClick(botWithRole.bot.id)}
-                      variant="danger"
-                      size="sm"
-                    >
-                      <svg className="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete
-                    </Button>
-                  )}
+                    {/* Dropdown Menu */}
+                    {openDropdown === botWithRole.bot.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                        <div className="py-1" role="menu">
+                          {/* Collaboration & Transfer - Combined option for owners */}
+                          {(botWithRole.role === 'owner' && (botWithRole.bot.allow_collaboration || onManageCollaboration)) && (
+                            <button
+                              onClick={() => {
+                                if (onManageCollaboration) {
+                                  onManageCollaboration(botWithRole);
+                                }
+                                setOpenDropdown(null);
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              role="menuitem"
+                            >
+                              <UserGroupIcon className="mr-3 h-4 w-4" />
+                              Manage Collaboration
+                            </button>
+                          )}
+                          
+                          {/* Documents */}
+                          <button
+                            onClick={() => {
+                              if (onDocuments) {
+                                onDocuments(botWithRole);
+                              } else {
+                                window.location.href = `/bots/${botWithRole.bot.id}/documents`;
+                              }
+                              setOpenDropdown(null);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            role="menuitem"
+                          >
+                            <DocumentTextIcon className="mr-3 h-4 w-4" />
+                            Documents
+                          </button>
+                          
+                          {/* Integrations */}
+                          <button
+                            onClick={() => {
+                              if (onIntegrations) {
+                                onIntegrations(botWithRole);
+                              }
+                              setOpenDropdown(null);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            role="menuitem"
+                          >
+                            <Cog6ToothIcon className="mr-3 h-4 w-4" />
+                            Integrations
+                          </button>
+                          
+                          {/* Transfer Ownership - For owners only */}
+                          {botWithRole.role === 'owner' && (
+                            <>
+                              <div className="border-t border-gray-100 dark:border-gray-600" />
+                              <button
+                                onClick={() => {
+                                  onTransferOwnership(botWithRole);
+                                  setOpenDropdown(null);
+                                }}
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                role="menuitem"
+                              >
+                                <ArrowsRightLeftIcon className="mr-3 h-4 w-4" />
+                                Transfer Ownership
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Delete - For owners only */}
+                          {botWithRole.role === 'owner' && (
+                            <>
+                              <div className="border-t border-gray-100 dark:border-gray-600" />
+                              <button
+                                onClick={() => {
+                                  handleDeleteClick(botWithRole.bot.id);
+                                  setOpenDropdown(null);
+                                }}
+                                className="flex items-center w-full px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                role="menuitem"
+                              >
+                                <TrashIcon className="mr-3 h-4 w-4" />
+                                Delete Bot
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -399,84 +448,71 @@ export const BotList: React.FC<BotListProps> = ({
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmation && (
-        <div className="fixed inset-0 bg-black/50 overflow-y-auto h-full w-full z-40">
-          <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-800 w-96 shadow-xl rounded-xl bg-white dark:bg-gray-900">
-            <div className="mt-3">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Delete Bot</h3>
-                <button
-                  onClick={handleCancelDelete}
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      <Modal
+        isOpen={!!deleteConfirmation}
+        onClose={handleCancelDelete}
+        title="Delete Bot"
+        size="md"
+        footer={deleteInfo && !isLoadingDeleteInfo ? (
+          <>
+            <Button
+              onClick={handleCancelDelete}
+              variant="outline"
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => handleDeleteClick(deleteConfirmation)}
+              variant="danger"
+              size="sm"
+            >
+              Delete Bot
+            </Button>
+          </>
+        ) : undefined}
+      >
+
+        {/* Modal Content */}
+        {isLoadingDeleteInfo ? (
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-2/3"></div>
+          </div>
+        ) : deleteInfo ? (
+          <>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <ExclamationTriangleIcon className="h-8 w-8 text-red-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-900 dark:text-gray-100">
+                    Are you sure you want to delete <strong>{deleteInfo.bot_name}</strong>?
+                  </p>
+                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                    This action cannot be undone.
+                  </p>
+                </div>
               </div>
 
-              {/* Modal Content */}
-              {isLoadingDeleteInfo ? (
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-2/3"></div>
-                </div>
-              ) : deleteInfo ? (
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <svg className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-900 dark:text-gray-100">
-                        Are you sure you want to delete <strong>{deleteInfo.bot_name}</strong>?
-                      </p>
-                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                        This action cannot be undone.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Cascade Information */}
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
-                    <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-                      The following data will also be deleted:
-                    </h4>
-                    <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                      <li>• {deleteInfo.cascade_info.conversations} conversation sessions</li>
-                      <li>• {deleteInfo.cascade_info.messages} messages</li>
-                      <li>• {deleteInfo.cascade_info.documents} documents</li>
-                      <li>• {deleteInfo.cascade_info.collaborators} collaborator permissions</li>
-                    </ul>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex justify-end space-x-3 pt-4">
-                    <Button
-                      onClick={handleCancelDelete}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteClick(deleteConfirmation)}
-                      variant="danger"
-                      size="sm"
-                    >
-                      Delete Bot
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
+              {/* Cascade Information */}
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+                  The following data will also be deleted:
+                </h4>
+                <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                  <li>• {deleteInfo.cascade_info.conversations} conversation sessions</li>
+                  <li>• {deleteInfo.cascade_info.messages} messages</li>
+                  <li>• {deleteInfo.cascade_info.documents} documents</li>
+                  <li>• {deleteInfo.cascade_info.collaborators} collaborator permissions</li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        ) : null}
+      </Modal>
     </div>
   );
 };

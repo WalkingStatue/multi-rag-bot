@@ -2,6 +2,7 @@
  * Chat search component for searching conversations and messages
  */
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useChatStore } from '../../stores/chatStore';
 import { chatService } from '../../services/chatService';
 import { ConversationSearchResult } from '../../types/chat';
@@ -21,16 +22,36 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<ConversationSearchResult[]>([]);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { uiState, setSearchQuery, setSearchResults } = useChatStore();
 
+  // Calculate dropdown position when opened
+  useEffect(() => {
+    if (isOpen && searchRef.current) {
+      const rect = searchRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    } else {
+      setDropdownPosition(null);
+    }
+  }, [isOpen]);
+
   // Close search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      const target = event.target as Node;
+      if (searchRef.current && !searchRef.current.contains(target)) {
+        // Also check if click is in the portal dropdown
+        const dropdown = document.getElementById('search-dropdown');
+        if (!dropdown || !dropdown.contains(target)) {
+          setIsOpen(false);
+        }
       }
     };
 
@@ -71,14 +92,14 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
   };
 
   const highlightText = (text: string, query: string) => {
-    if (!query.trim()) return text;
+    if (!query.trim() || !text) return text || '';
 
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) =>
       regex.test(part) ? (
-        <mark key={index} className="bg-yellow-200 px-1 rounded">
+        <mark key={index} className="bg-yellow-200 dark:bg-yellow-600 dark:text-yellow-100 px-1 rounded">
           {part}
         </mark>
       ) : (
@@ -98,7 +119,7 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
           value={uiState.searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
         />
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           {isSearching ? (
@@ -114,16 +135,24 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
         </div>
       </div>
 
-      {/* Search results dropdown */}
-      {isOpen && (uiState.searchQuery.length >= 2 || results.length > 0) && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+      {/* Search results dropdown - rendered via portal */}
+      {isOpen && (uiState.searchQuery.length >= 2 || results.length > 0) && dropdownPosition && createPortal(
+        <div 
+          id="search-dropdown"
+          className="fixed z-[999999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-96 overflow-y-auto"
+          style={{
+            top: dropdownPosition.top + 4,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width
+          }}
+        >
           {isSearching ? (
-            <div className="p-4 text-center text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-2"></div>
               Searching...
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               {uiState.searchQuery.length < 2 ? (
                 'Type at least 2 characters to search'
               ) : (
@@ -136,27 +165,27 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
                 <div
                   key={`${result.session_id}-${index}`}
                   onClick={() => handleResultClick(result)}
-                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h4 className="text-sm font-medium text-gray-900 truncate">
-                          {result.title || 'Untitled Conversation'}
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {result.session_title || 'Untitled Conversation'}
                         </h4>
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                           {result.bot_name}
                         </span>
                       </div>
                       
-                      <div className="text-sm text-gray-600 mb-1">
-                        <span className="font-medium capitalize">{result.message_role}:</span>{' '}
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                        <span className="font-medium capitalize">{result.role}:</span>{' '}
                         <span className="line-clamp-2">
-                          {highlightText(result.message_content, uiState.searchQuery)}
+                          {highlightText(result.content, uiState.searchQuery)}
                         </span>
                       </div>
                       
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {formatDistanceToNow(new Date(result.created_at), { addSuffix: true })}
                         {result.relevance_score && (
                           <span className="ml-2">
@@ -167,7 +196,7 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
                     </div>
                     
                     <div className="ml-2 flex-shrink-0">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -176,7 +205,8 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

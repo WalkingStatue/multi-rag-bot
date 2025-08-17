@@ -91,36 +91,12 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
 
   const canManageCollaborators = ['owner', 'admin'].includes(currentUserRole);
 
-  // Header content with back button and bot info
-  const headerContent = bot && (
-    <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-6 py-4 mb-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="text-neutral-400 hover:text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-200"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-            <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Collaboration Management
-            </h1>
-          </div>
-          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-            Manage collaborators and permissions for "{bot.bot.name}"
-          </p>
-        </div>
-        
-        {/* Notification System */}
-        <NotificationSystem
-          botId={botId}
-          onNotificationClick={handleNotificationClick}
-        />
-      </div>
-    </div>
+  // Actions for the header
+  const actions = bot && (
+    <NotificationSystem
+      botId={botId}
+      onNotificationClick={handleNotificationClick}
+    />
   );
 
   if (loading) {
@@ -180,9 +156,14 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
 
   return (
     <ProtectedRoute>
-      <MainLayout>
-        {headerContent}
-        
+      <MainLayout
+        title={bot ? `${bot.bot.name} Collaboration` : 'Collaboration Management'}
+        subtitle={bot ? `Manage collaborators and permissions for "${bot.bot.name}"` : undefined}
+        showBackButton={true}
+        onBackClick={() => navigate('/dashboard')}
+        actions={actions}
+        maxWidth="lg"
+      >
         <Container size="lg" padding="md" centered>
           {/* Bot Info Card */}
           <div className="bg-white dark:bg-neutral-900 shadow rounded-lg p-6 mb-8">

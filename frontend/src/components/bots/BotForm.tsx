@@ -162,16 +162,16 @@ export const BotForm: React.FC<BotFormProps> = ({
   return (
     <div className="max-w-2xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-6 border border-gray-200 dark:border-gray-800">
           {/* Basic Information */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Basic Information</h3>
               
               <div className="grid grid-cols-1 gap-6">
                 {/* Bot Name */}
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Bot Name *
                   </label>
                   <input
@@ -181,14 +181,14 @@ export const BotForm: React.FC<BotFormProps> = ({
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     placeholder="Enter bot name"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Description
                   </label>
                   <textarea
@@ -197,7 +197,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                     rows={3}
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     placeholder="Describe what this bot does"
                   />
                 </div>
@@ -210,9 +210,9 @@ export const BotForm: React.FC<BotFormProps> = ({
                     type="checkbox"
                     checked={formData.is_public}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="is_public" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="is_public" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Make this bot publicly accessible
                   </label>
                 </div>
@@ -221,16 +221,16 @@ export const BotForm: React.FC<BotFormProps> = ({
 
             {/* Validation Errors */}
             {validationErrors.length > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <svg className="h-5 w-5 text-red-400 dark:text-red-300" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Please fix the following errors:</h3>
-                    <ul className="mt-2 text-sm text-red-700 list-disc list-inside">
+                    <h3 className="text-sm font-medium text-red-800 dark:text-red-200">Please fix the following errors:</h3>
+                    <ul className="mt-2 text-sm text-red-700 dark:text-red-300 list-disc list-inside">
                       {validationErrors.map((error, index) => (
                         <li key={index}>{typeof error === 'string' ? error : JSON.stringify(error)}</li>
                       ))}
@@ -242,7 +242,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
             {/* LLM Configuration */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">LLM Configuration</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">LLM Configuration</h3>
               
               {isLoadingProviders ? (
                 <div className="animate-pulse space-y-4">
@@ -255,7 +255,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Provider */}
                   <div>
-                    <label htmlFor="llm_provider" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="llm_provider" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Provider *
                     </label>
                     <select
@@ -263,7 +263,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       name="llm_provider"
                       value={formData.llm_provider}
                       onChange={handleProviderChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     >
                       {providerSettings && Object.entries(providerSettings.llm_providers).map(([key, provider]) => (
                         <option key={key} value={key}>{provider.display_name}</option>
@@ -273,7 +273,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Model */}
                   <div>
-                    <label htmlFor="llm_model" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="llm_model" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Model *
                     </label>
                     <select
@@ -281,7 +281,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       name="llm_model"
                       value={formData.llm_model}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     >
                       {getAvailableModels(formData.llm_provider, 'llm').map((model) => (
                         <option key={model.value} value={model.value}>
@@ -293,7 +293,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Temperature */}
                   <div>
-                    <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="temperature" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Temperature ({formData.temperature})
                     </label>
                     <input
@@ -307,7 +307,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       onChange={handleInputChange}
                       className="mt-1 block w-full"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>Focused (0)</span>
                       <span>Balanced (1)</span>
                       <span>Creative (2)</span>
@@ -316,7 +316,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Max Tokens */}
                   <div>
-                    <label htmlFor="max_tokens" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="max_tokens" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Max Tokens
                     </label>
                     <input
@@ -327,13 +327,13 @@ export const BotForm: React.FC<BotFormProps> = ({
                       max="8000"
                       value={formData.max_tokens}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     />
                   </div>
 
                   {/* Top P */}
                   <div>
-                    <label htmlFor="top_p" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="top_p" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Top P ({formData.top_p})
                     </label>
                     <input
@@ -347,7 +347,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       onChange={handleInputChange}
                       className="mt-1 block w-full"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>Restrictive (0)</span>
                       <span>Balanced (1)</span>
                     </div>
@@ -355,7 +355,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Frequency Penalty */}
                   <div>
-                    <label htmlFor="frequency_penalty" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="frequency_penalty" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Frequency Penalty ({formData.frequency_penalty})
                     </label>
                     <input
@@ -369,7 +369,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       onChange={handleInputChange}
                       className="mt-1 block w-full"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>Encourage (-2)</span>
                       <span>Neutral (0)</span>
                       <span>Discourage (2)</span>
@@ -378,7 +378,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Presence Penalty */}
                   <div>
-                    <label htmlFor="presence_penalty" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="presence_penalty" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Presence Penalty ({formData.presence_penalty})
                     </label>
                     <input
@@ -392,7 +392,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       onChange={handleInputChange}
                       className="mt-1 block w-full"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>Encourage (-2)</span>
                       <span>Neutral (0)</span>
                       <span>Discourage (2)</span>
@@ -404,23 +404,23 @@ export const BotForm: React.FC<BotFormProps> = ({
 
             {/* Embedding Configuration */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Embedding Configuration</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Embedding Configuration</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Configure how documents are processed and embedded for this bot's knowledge base.
               </p>
               
               {isLoadingProviders ? (
                 <div className="animate-pulse space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="h-10 bg-gray-200 rounded"></div>
-                    <div className="h-10 bg-gray-200 rounded"></div>
+                    <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
                   </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Embedding Provider */}
                   <div>
-                    <label htmlFor="embedding_provider" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="embedding_provider" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Embedding Provider
                     </label>
                     <select
@@ -428,7 +428,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       name="embedding_provider"
                       value={formData.embedding_provider}
                       onChange={handleEmbeddingProviderChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     >
                       {providerSettings && Object.entries(providerSettings.embedding_providers).map(([key, provider]) => (
                         <option key={key} value={key}>{provider.display_name}</option>
@@ -438,7 +438,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
                   {/* Embedding Model */}
                   <div>
-                    <label htmlFor="embedding_model" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="embedding_model" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Embedding Model
                     </label>
                     <select
@@ -446,7 +446,7 @@ export const BotForm: React.FC<BotFormProps> = ({
                       name="embedding_model"
                       value={formData.embedding_model}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                     >
                       {getAvailableModels(formData.embedding_provider || 'openai', 'embedding').map((model) => (
                         <option key={model.value} value={model.value}>
@@ -461,7 +461,7 @@ export const BotForm: React.FC<BotFormProps> = ({
 
             {/* Collaboration Settings */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Collaboration Settings</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Collaboration Settings</h3>
               
               <div className="space-y-4">
                 {/* Allow Collaboration */}
@@ -472,13 +472,13 @@ export const BotForm: React.FC<BotFormProps> = ({
                     type="checkbox"
                     checked={formData.allow_collaboration}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="allow_collaboration" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="allow_collaboration" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Allow collaboration on this bot
                   </label>
                 </div>
-                <p className="text-sm text-gray-500 ml-6">
+                <p className="text-sm text-gray-500 dark:text-gray-400 ml-6">
                   When enabled, you can invite other users to collaborate on this bot with different permission levels.
                 </p>
               </div>
@@ -486,10 +486,10 @@ export const BotForm: React.FC<BotFormProps> = ({
 
             {/* System Prompt */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">System Prompt</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">System Prompt</h3>
               
               <div>
-                <label htmlFor="system_prompt" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="system_prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Instructions for the AI *
                 </label>
                 <textarea
@@ -499,10 +499,10 @@ export const BotForm: React.FC<BotFormProps> = ({
                   required
                   value={formData.system_prompt}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                   placeholder="You are a helpful assistant that..."
                 />
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                   Define the bot's personality, role, and behavior. This will be sent with every conversation.
                 </p>
               </div>
@@ -515,14 +515,14 @@ export const BotForm: React.FC<BotFormProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || !formData.name.trim() || !formData.system_prompt.trim()}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Bot' : 'Update Bot'}
           </button>

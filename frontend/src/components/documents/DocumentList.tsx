@@ -14,6 +14,8 @@ import {
 } from '../../services/documentService';
 import { Button } from '../common/Button';
 import { Alert } from '../common/Alert';
+import { Input } from '../common/Input';
+import { Select } from '../common/Select';
 import { 
   MagnifyingGlassIcon,
   FunnelIcon,
@@ -129,7 +131,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
 
     const colorClasses = {
       yellow: 'bg-yellow-100 text-yellow-800',
-      blue: 'bg-blue-100 text-blue-800',
+      blue: 'bg-primary-100 text-primary-800',
       green: 'bg-green-100 text-green-800',
       red: 'bg-red-100 text-red-800'
     };
@@ -146,12 +148,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
 
   if (loading) {
     return (
-      <div className="document-list bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="document-list bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-16 bg-gray-200 rounded"></div>
+              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
             ))}
           </div>
         </div>
@@ -160,12 +162,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
   }
 
   return (
-    <div className="document-list bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="document-list bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-            <DocumentTextIcon className="h-5 w-5 mr-2 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+            <DocumentTextIcon className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
             Documents ({filteredDocuments.length})
           </h3>
           <div className="flex items-center space-x-2">
@@ -196,30 +198,27 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
         {/* Search */}
         <div className="relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
+          <Input
             type="text"
             placeholder="Search documents..."
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2"
           />
         </div>
 
         {/* Filters */}
         {showFilters && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
+                <Select
+                  label="Status"
                   value={filters.processing_status || ''}
                   onChange={(e) => setFilters(prev => ({ 
                     ...prev, 
                     processing_status: (e.target.value as "failed" | "pending" | "processing" | "processed") || undefined 
                   }))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">All statuses</option>
                   {uniqueStatuses.map(status => (
@@ -227,20 +226,17 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
                       {formatProcessingStatus(status)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  File Type
-                </label>
-                <select
+                <Select
+                  label="File Type"
                   value={filters.mime_type || ''}
                   onChange={(e) => setFilters(prev => ({ 
                     ...prev, 
                     mime_type: e.target.value || undefined 
                   }))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">All types</option>
                   {uniqueMimeTypes.map(mimeType => (
@@ -248,38 +244,37 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
                       {getFileTypeInfo(mimeType!).name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Sort By
                 </label>
                 <div className="flex space-x-2">
-                  <select
+                  <Select
                     value={filters.sort_by}
                     onChange={(e) => setFilters(prev => ({ 
                       ...prev, 
                       sort_by: e.target.value as any 
                     }))}
-                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1"
                   >
                     <option value="created_at">Date</option>
                     <option value="filename">Name</option>
                     <option value="file_size">Size</option>
                     <option value="chunk_count">Chunks</option>
-                  </select>
-                  <select
+                  </Select>
+                  <Select
                     value={filters.sort_order}
                     onChange={(e) => setFilters(prev => ({ 
                       ...prev, 
                       sort_order: e.target.value as 'asc' | 'desc' 
                     }))}
-                    className="border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="desc">↓</option>
                     <option value="asc">↑</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -299,11 +294,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
       )}
 
       {/* Document List */}
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-gray-200 dark:divide-gray-800">
         {filteredDocuments.length === 0 ? (
           <div className="p-8 text-center">
-            <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">
+            <DocumentTextIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">
               {documents.length === 0 
                 ? 'No documents uploaded yet' 
                 : 'No documents match your filters'
@@ -312,29 +307,29 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
           </div>
         ) : (
           filteredDocuments.map((document) => (
-            <div key={document.id} className="p-4 hover:bg-gray-50">
+            <div key={document.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {document.mime_type?.includes('pdf') ? (
-                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                        <span className="text-sm font-medium text-red-600">PDF</span>
+                      <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                        <span className="text-sm font-medium text-red-600 dark:text-red-400">PDF</span>
                       </div>
                     ) : (
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <DocumentTextIcon className="h-5 w-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                        <DocumentTextIcon className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                       </div>
                     )}
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                         {document.filename}
                       </p>
                       {getStatusBadge(document.processing_status)}
                     </div>
-                    <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                    <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
                       <span>{formatFileSize(document.file_size || 0)}</span>
                       <span>{document.chunk_count} chunks</span>
                       <span>{new Date(document.created_at).toLocaleDateString()}</span>
@@ -389,7 +384,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ botId, onDocumentSelect }) 
               </div>
 
               {document.processing_status === 'failed' && (
-                <div className="mt-2 flex items-center text-sm text-red-600">
+                <div className="mt-2 flex items-center text-sm text-red-600 dark:text-red-400">
                   <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
                   Processing failed - document may be corrupted or unsupported
                 </div>

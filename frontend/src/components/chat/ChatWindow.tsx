@@ -8,10 +8,7 @@ import { useChatSession } from '../../hooks/useChatSession';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { SessionList } from './SessionList';
-import { ConnectionStatus } from './ConnectionStatus';
 import { TypingIndicator } from './TypingIndicator';
-import { ChatDiagnostics } from './ChatDiagnostics';
-import { ScrollDebug } from './ScrollDebug';
 import { ErrorBoundary, ChatErrorFallback } from '../common/ErrorBoundary';
 
 import { BotResponse } from '../../types/bot';
@@ -115,8 +112,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
     return (
       <div className={`flex items-center justify-center h-96 ${className}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <span className="text-gray-600">Loading chat...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+          <span className="text-gray-600 dark:text-gray-400">Loading chat...</span>
         </div>
       </div>
     );
@@ -125,7 +122,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
   if (error) {
     return (
       <div className={`flex items-center justify-center h-96 ${className}`}>
-        <div className="text-center text-red-600">
+        <div className="text-center text-red-600 dark:text-red-400">
           <div className="mb-4">
             <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -140,19 +137,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
 
   return (
     <ErrorBoundary fallback={<ChatErrorFallback error="Chat failed to load" />}>
-      <div className={`flex h-full bg-white rounded-lg shadow-lg overflow-hidden chat-container ${className}`}>
+      <div className={`flex h-full bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden chat-container ${className}`}>
         {/* Session sidebar */}
-        <div className="w-1/4 border-r border-gray-200 flex flex-col min-h-0">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Chat with {bot.name}
-            </h3>
-            <div className="mt-2 space-y-2">
-              <ConnectionStatus />
-              <ChatDiagnostics botId={bot.id} />
-              <ScrollDebug />
-            </div>
-          </div>
+        <div className="w-1/4 border-r border-gray-200 dark:border-gray-800 flex flex-col min-h-0">
           <SessionList bot={bot} sessions={sessions} onSelectSession={selectSession} />
         </div>
 
@@ -169,7 +156,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
               </div>
             </ErrorBoundary>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500">
+            <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
               <div className="text-center">
                 <p className="text-lg mb-2">No conversation selected</p>
                 <p className="text-sm">Select a conversation or start a new one</p>

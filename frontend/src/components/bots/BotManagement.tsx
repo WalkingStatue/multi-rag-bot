@@ -2,7 +2,7 @@
  * Main bot management component with backend integration
  */
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BotList } from './BotList';
 import { BotForm } from './BotForm';
 import { BotTransferModal } from './BotTransferModal';
@@ -18,18 +18,35 @@ interface Message {
 
 export const BotManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [searchParams] = useSearchParams();
   const [bots, setBots] = useState<BotWithRole[]>([]);
   const [editingBot, setEditingBot] = useState<BotWithRole | null>(null);
   const [transferBot, setTransferBot] = useState<BotWithRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<Message | null>(null);
   const [filters, setFilters] = useState<BotListFilters>({});
+  
+  // Derive view mode from URL parameters
+  const action = searchParams.get('action');
+  const botId = searchParams.get('id');
+  const viewMode: ViewMode = action === 'create' ? 'create' : action === 'edit' ? 'edit' : 'list';
 
   // Load bots on component mount
   useEffect(() => {
     loadBots();
   }, []);
+
+  // Load specific bot for editing when URL changes
+  useEffect(() => {
+    if (viewMode === 'edit' && botId && bots.length > 0) {
+      const botToEdit = bots.find(b => b.bot.id === botId);
+      if (botToEdit) {
+        setEditingBot(botToEdit);
+      }
+    } else if (viewMode !== 'edit') {
+      setEditingBot(null);
+    }
+  }, [viewMode, botId, bots]);
 
   // Auto-hide messages after 5 seconds
   useEffect(() => {
@@ -58,13 +75,11 @@ export const BotManagement: React.FC = () => {
   };
 
   const handleCreateBot = () => {
-    setViewMode('create');
-    setEditingBot(null);
+    navigate('/bots?action=create');
   };
 
   const handleEditBot = (bot: BotWithRole) => {
-    setViewMode('edit');
-    setEditingBot(bot);
+    navigate(`/bots?action=edit&id=${bot.bot.id}`);
   };
 
   const handleDeleteBot = async (botId: string) => {
@@ -100,7 +115,7 @@ export const BotManagement: React.FC = () => {
         });
       }
 
-      setViewMode('list');
+      navigate('/bots');
       setEditingBot(null);
       await loadBots(); // Reload the list
     } catch (error: any) {
@@ -135,7 +150,7 @@ export const BotManagement: React.FC = () => {
   };
 
   const handleFormCancel = () => {
-    setViewMode('list');
+    navigate('/bots');
     setEditingBot(null);
   };
 
@@ -233,18 +248,7 @@ export const BotManagement: React.FC = () => {
   }, [bots, filters]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {viewMode === 'list' ? 'Your Bots' : viewMode === 'create' ? 'Create New Bot' : 'Edit Bot'}
-        </h1>
-        {viewMode === 'list' && (
-          <p className="mt-2 text-gray-600">
-            Manage your AI assistants and their configurations
-          </p>
-        )}
-      </div>
+    <div className="space-y-6">
 
       {/* Message Display */}
       {message && (
@@ -294,6 +298,7 @@ export const BotManagement: React.FC = () => {
           onDeleteBot={handleDeleteBot}
           onTransferOwnership={handleTransferOwnership}
           onManageCollaboration={handleManageCollaboration}
+          onIntegrations={(bot) => navigate(`/bots/${bot.bot.id}/integrations`)}
         />
       ) : (
         <BotForm
