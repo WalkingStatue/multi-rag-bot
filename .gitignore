@@ -374,54 +374,11 @@ config/production.py
 *.rar
 *.7z
 
-# ================================
-# Development and Testing
-# ================================
-# Test artifacts
-.coverage
-htmlcov/
-.pytest_cache/
-test-results/
-coverage-reports/
 
-# Profiling
-*.prof
-*.pstats
 
-# Documentation builds
-docs/_build/
-docs/build/
-site/
 
-# ================================
-# Monitoring and Analytics
-# ================================
-# Monitoring data
-monitoring/
-metrics/
-*.metrics
 
-# Analytics data
-analytics/
-stats/
 
-# ================================
-# Machine Learning / AI
-# ================================
-# Model files
-*.model
-*.pkl
-*.joblib
-models/
-checkpoints/
-
-# Training data
-training_data/
-datasets/
-
-# Embeddings cache
-embeddings_cache/
-.embeddings/
 
 # ================================
 # Miscellaneous
