@@ -20,6 +20,9 @@ interface CollaborationManagementProps {
   botName: string;
   currentUserRole: 'owner' | 'admin' | 'editor' | 'viewer';
   onPermissionUpdate?: () => void;
+  // Optional: when provided, the component renders the specified view and hides internal navigation when hideChrome is true
+  view?: 'collaborators' | 'activity' | 'bulk-update';
+  hideChrome?: boolean;
 }
 
 interface ViewMode {
@@ -30,10 +33,13 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   botId,
   botName,
   currentUserRole,
-  onPermissionUpdate
+  onPermissionUpdate,
+  view,
+  hideChrome
 }) => {
   const { error: showErrorToast, success: showSuccessToast } = useToastHelpers();
   const [viewMode, setViewMode] = useState<ViewMode>({ type: 'collaborators' });
+  const effectiveView: 'collaborators' | 'activity' | 'bulk-update' = (view || viewMode.type);
   const [collaborators, setCollaborators] = useState<BotPermission[]>([]);
   // const [permissionHistory, setPermissionHistory] = useState<PermissionHistory[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
@@ -99,6 +105,13 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       return () => clearTimeout(timer);
     }
   }, [success, error]);
+
+  // If externally controlled to activity view, ensure logs are loaded
+  useEffect(() => {
+    if (effectiveView === 'activity') {
+      loadActivityLogs();
+    }
+  }, [effectiveView]);
 
   const loadCollaborators = async () => {
     try {
@@ -240,10 +253,10 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   }, []);
 
   const handleActivityUpdate = useCallback((_data: any) => {
-    if (viewMode.type === 'activity') {
+    if ((view || viewMode.type) === 'activity') {
       loadActivityLogs();
     }
-  }, [viewMode.type]);
+  }, [view, viewMode.type]);
 
   const renderCollaboratorsList = () => (
     <div className="space-y-4">
@@ -394,7 +407,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   const renderActivityLogs = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-gray-900">Activity Log</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Activity Log</h3>
         <Button
           onClick={loadActivityLogs}
           disabled={loading.activity}
@@ -407,30 +420,30 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       {loading.activity ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading activity logs...</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Loading activity logs...</p>
         </div>
-      ) : activityLogs.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+      ) : !Array.isArray(activityLogs) || activityLogs.length === 0 ? (
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <p>No activity logs found.</p>
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <div className="bg-white dark:bg-neutral-900 shadow overflow-hidden sm:rounded-md">
+          <ul className="divide-y divide-gray-200 dark:divide-neutral-800">
             {activityLogs.map((log) => (
               <li key={log.id} className="px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {log.action}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {log.username && `by ${log.username}`}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-400 dark:text-gray-500">
                       {new Date(log.created_at).toLocaleString()}
                     </div>
                     {log.details && (
-                      <div className="text-xs text-gray-600 mt-1">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         {JSON.stringify(log.details, null, 2)}
                       </div>
                     )}
@@ -481,7 +494,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   );
 
   const renderContent = () => {
-    switch (viewMode.type) {
+    switch (effectiveView) {
       case 'collaborators':
         return renderCollaboratorsList();
       case 'activity':
@@ -496,12 +509,14 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Collaboration Management</h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Manage collaborators and permissions for "{botName}"
-        </p>
-      </div>
+      {!hideChrome && (
+        <div className="border-b border-gray-200 pb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Collaboration Management</h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Manage collaborators and permissions for "{botName}"
+          </p>
+        </div>
+      )}
 
       {/* Status Messages */}
       {error && (
@@ -534,45 +549,47 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       )}
 
       {/* Navigation Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setViewMode({ type: 'collaborators' })}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              viewMode.type === 'collaborators'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-            }`}
-          >
-            Collaborators
-          </button>
-          <button
-            onClick={() => {
-              setViewMode({ type: 'activity' });
-              loadActivityLogs();
-            }}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              viewMode.type === 'activity'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-            }`}
-          >
-            Activity Log
-          </button>
-          {canManageCollaborators && (
+      {!hideChrome && (
+        <div className="border-b border-gray-200 dark:border-gray-800">
+          <nav className="-mb-px flex space-x-8">
             <button
-              onClick={() => setViewMode({ type: 'bulk-update' })}
+              onClick={() => setViewMode({ type: 'collaborators' })}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                viewMode.type === 'bulk-update'
+                effectiveView === 'collaborators'
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
-              Bulk Update
+              Collaborators
             </button>
-          )}
-        </nav>
-      </div>
+            <button
+              onClick={() => {
+                setViewMode({ type: 'activity' });
+                loadActivityLogs();
+              }}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                effectiveView === 'activity'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}
+            >
+              Activity Log
+            </button>
+            {canManageCollaborators && (
+              <button
+                onClick={() => setViewMode({ type: 'bulk-update' })}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  effectiveView === 'bulk-update'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                Bulk Update
+              </button>
+            )}
+          </nav>
+        </div>
+      )}
 
       {/* Content */}
       <div className="mt-6">

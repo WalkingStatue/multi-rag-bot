@@ -28,19 +28,27 @@ switch ($Command) {
     "logs" {
         docker-compose logs -f
     }
+    "migrate" {
+        Write-Host "Running database migrations..." -ForegroundColor Green
+        Set-Location backend
+        alembic upgrade head
+        Set-Location ..
+        Write-Host "Database migrations completed!" -ForegroundColor Green
+    }
     "clean" {
         Write-Host "Cleaning up containers and volumes..." -ForegroundColor Red
         docker-compose down -v
         docker system prune -f
     }
     default {
-        Write-Host "Usage: .\run.ps1 [install|run|stop|logs|clean]" -ForegroundColor Cyan
+        Write-Host "Usage: .\run.ps1 [install|run|stop|logs|migrate|clean]" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "Commands:" -ForegroundColor White
         Write-Host "  install  - Install all dependencies" -ForegroundColor Gray
         Write-Host "  run      - Start the entire application" -ForegroundColor Gray
         Write-Host "  stop     - Stop the application" -ForegroundColor Gray
         Write-Host "  logs     - View logs" -ForegroundColor Gray
+        Write-Host "  migrate  - Run database migrations" -ForegroundColor Gray
         Write-Host "  clean    - Clean up containers and volumes" -ForegroundColor Gray
     }
 }

@@ -175,10 +175,10 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
   };
 
   const renderBulkControls = () => (
-    <div className="bg-gray-50 border border-gray-200 rounded-md p-4 mb-6">
+    <div className="bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded-md p-4 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-900">Bulk Actions</h3>
-        <div className="text-sm text-gray-500">
+        <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">Bulk Actions</h3>
+        <div className="text-sm text-neutral-500 dark:text-neutral-400">
           {getSelectedCount()} of {bulkItems.length} selected
         </div>
       </div>
@@ -189,17 +189,17 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
             type="checkbox"
             checked={getSelectedCount() === bulkItems.length && bulkItems.length > 0}
             onChange={(e) => handleSelectAll(e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900"
           />
-          <label className="ml-2 text-sm text-gray-700">Select All</label>
+          <label className="ml-2 text-sm text-neutral-700 dark:text-neutral-300">Select All</label>
         </div>
 
         <div className="flex items-center space-x-2">
-          <label className="text-sm text-gray-700">Set all selected to:</label>
+          <label className="text-sm text-neutral-700 dark:text-neutral-300">Set all selected to:</label>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as 'admin' | 'editor' | 'viewer')}
-            className="text-sm border border-gray-300 rounded px-2 py-1"
+            className="text-sm border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded px-2 py-1"
           >
             <option value="viewer">Viewer</option>
             <option value="editor">Editor</option>
@@ -226,8 +226,8 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
   );
 
   const renderCollaboratorsList = () => (
-    <div className="bg-white shadow overflow-hidden sm:rounded-md">
-      <ul className="divide-y divide-gray-200">
+    <div className="bg-white dark:bg-neutral-900 shadow overflow-hidden sm:rounded-md">
+      <ul className="divide-y divide-gray-200 dark:divide-neutral-800">
         {bulkItems.map((item) => (
           <li key={item.user_id} className="px-6 py-4">
             <div className="flex items-center justify-between">
@@ -237,13 +237,13 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
                   checked={item.selected}
                   onChange={(e) => handleSelectItem(item.user_id, e.target.checked)}
                   disabled={item.current_role === 'owner'}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900"
                 />
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                     {item.username}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     Current: {permissionService.formatRoleName(item.current_role)}
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
                   value={item.new_role}
                   onChange={(e) => handleRoleChange(item.user_id, e.target.value as any)}
                   disabled={item.current_role === 'owner' || loading}
-                  className="text-sm border border-gray-300 rounded px-2 py-1"
+                  className="text-sm border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded px-2 py-1"
                 >
                   {getRoleOptions(item.current_role).map(role => (
                     <option key={role} value={role}>
@@ -262,7 +262,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
                   ))}
                 </select>
                 {item.current_role === 'owner' && (
-                  <span className="text-xs text-gray-400">Owner (cannot modify)</span>
+                  <span className="text-xs text-neutral-400 dark:text-neutral-500">Owner (cannot modify)</span>
                 )}
               </div>
             </div>
@@ -277,11 +277,11 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
 
     return (
       <div className="mt-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Update Results</h3>
+        <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-4">Update Results</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Successful Updates */}
-          <div className="bg-green-50 border border-green-200 rounded-md p-4">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -289,10 +289,10 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
                 </svg>
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-green-800">
+                <h4 className="text-sm font-medium text-green-800 dark:text-green-300">
                   Successful Updates ({results.successful.length})
                 </h4>
-                <div className="mt-2 text-sm text-green-700">
+                <div className="mt-2 text-sm text-green-700 dark:text-green-300">
                   {results.successful.length > 0 ? (
                     <ul className="list-disc list-inside space-y-1">
                       {results.successful.map((item, index) => (
@@ -310,7 +310,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
           </div>
 
           {/* Failed Updates */}
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -318,10 +318,10 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
                 </svg>
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-red-800">
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-300">
                   Failed Updates ({results.failed.length})
                 </h4>
-                <div className="mt-2 text-sm text-red-700">
+                <div className="mt-2 text-sm text-red-700 dark:text-red-300">
                   {results.failed.length > 0 ? (
                     <ul className="list-disc list-inside space-y-1">
                       {results.failed.map((item, index) => (
@@ -370,9 +370,9 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900">Bulk Permission Management</h2>
-        <p className="mt-1 text-sm text-gray-600">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Bulk Permission Management</h2>
+        <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
           Update permissions for multiple collaborators at once
         </p>
       </div>
@@ -408,7 +408,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
       )}
 
       {/* Warning */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -416,10 +416,10 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-yellow-800">
+            <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
               Bulk Update Warning
             </h3>
-            <div className="mt-2 text-sm text-yellow-700">
+            <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
               <p>
                 This action will update permissions for multiple users simultaneously.
                 Please review your selections carefully before proceeding.

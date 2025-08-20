@@ -78,7 +78,17 @@ export class PermissionService {
    */
   async getActivityLog(botId: string): Promise<ActivityLog[]> {
     const response = await apiClient.get(`/bots/${botId}/activity`);
-    return response.data;
+    const data = response.data as any;
+    if (Array.isArray(data)) {
+      return data as ActivityLog[];
+    }
+    if (Array.isArray(data?.activity_logs)) {
+      return data.activity_logs as ActivityLog[];
+    }
+    if (Array.isArray(data?.logs)) {
+      return data.logs as ActivityLog[];
+    }
+    return [];
   }
 
   /**

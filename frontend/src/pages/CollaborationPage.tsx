@@ -249,6 +249,8 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
                 botId={botId!}
                 botName={bot.bot.name}
                 currentUserRole={currentUserRole}
+                hideChrome={true}
+                view="collaborators"
                 onPermissionUpdate={handlePermissionUpdate}
               />
             )}
@@ -270,11 +272,12 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
                     View recent activity and permission changes for this bot
                   </p>
                 </div>
-                
                 <CollaborationManagement
                   botId={botId!}
                   botName={bot.bot.name}
                   currentUserRole={currentUserRole}
+                  hideChrome={true}
+                  view="activity"
                   onPermissionUpdate={handlePermissionUpdate}
                 />
               </div>
