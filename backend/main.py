@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import settings
-from src.api import auth, users, bots, permissions, documents, conversations, websocket, analytics, ocr, embedding_validation, embedding_models, document_reprocessing, cache_management
+from src.api import auth, users, bots, permissions, documents, conversations, websocket, analytics, ocr, embedding_validation, embedding_models, document_reprocessing, cache_management, widget
 
 app = FastAPI(
     title="Multi-Bot RAG Platform",
@@ -17,10 +17,20 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origin_regex=r".*",  # Allow all origins for widget embedding
+    allow_credentials=False,  # Disable credentials for widget requests
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Content-Type", 
+        "Authorization", 
+        "X-Widget-Key", 
+        "X-Visitor-ID", 
+        "X-Domain",
+        "User-Agent",
+        "Accept",
+        "Origin",
+        "X-Requested-With"
+    ],
 )
 
 # Include routers
@@ -33,6 +43,7 @@ app.include_router(conversations.router, prefix="/api")
 app.include_router(websocket.router, prefix="/api")
 app.include_router(analytics.router, prefix="/api")
 app.include_router(ocr.router, prefix="/api")
+app.include_router(widget.router, prefix="/api")
 app.include_router(embedding_validation.router)
 app.include_router(embedding_models.router)
 app.include_router(document_reprocessing.router)

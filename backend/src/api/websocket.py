@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..core.database import get_db
 from ..services.websocket_service import WebSocketService, connection_manager
+from ..services.widget_websocket_service import WidgetWebSocketService
 
 logger = logging.getLogger(__name__)
 
@@ -273,3 +274,34 @@ async def get_websocket_connections():
         },
         "connection_metadata": connection_manager.connection_metadata
     }
+
+
+@router.websocket("/ws/widget/{session_token}")
+async def websocket_widget_endpoint(
+    websocket: WebSocket,
+    session_token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    WebSocket endpoint for widget chat sessions.
+    
+    Args:
+        websocket: WebSocket connection
+        session_token: Widget session token
+        db: Database session
+    """
+    widget_ws_service = WidgetWebSocketService(db)
+    
+    try:
+        # Authenticate and handle widget session
+        await widget_ws_service.handle_widget_connection(websocket, session_token)
+    
+    except WebSocketDisconnect:
+        logger.info(f"Widget WebSocket disconnected for session {session_token}")
+    
+    except Exception as e:
+        logger.error(f"Widget WebSocket error: {e}")
+        try:
+            await websocket.close(code=1011, reason="Internal server error")
+        except:
+            pass
