@@ -4,37 +4,37 @@
 - [x] Improve document retrieval with smart context switching for LLM and retrieval
   - Estimate: 4–6 days
   - Depends on: none
-- [ ] Introduce Redis-based caching (review current caching and integrate)
+- [x] Introduce Redis-based caching (review current caching and integrate)
   - Estimate: 1–2 days
   - Depends on: none
-- [ ] Standardize error handling across all pages (consistent UX + fallback)
+- [x] Standardize error handling across all pages (consistent UX + fallback)
   - Estimate: 1–2 days
   - Depends on: Use `utils/logger` consistently
-- [ ] Add API key generation for Bots API
+- [x] Add API key generation for Bots API
   - Estimate: 0.5–1 day
   - Depends on: none
-- [ ] Create API docs page
+- [x] Create API docs page
   - Estimate: 1 day
   - Depends on: stable API routes and auth
-- [ ] Consolidate WebSocket services into a single core with adapters (frontend)
+- [x] Consolidate WebSocket services into a single core with adapters (frontend)
   - Estimate: 2–3 days
   - Depends on: Centralize WebSocket URL; Consolidate WS message schema; Normalize env usage
-- [ ] Fix EnhancedWebSocketService.connect implementation and typing
+- [x] Fix EnhancedWebSocketService.connect implementation and typing
   - Estimate: 0.5 day
   - Depends on: WebSocket core consolidation
-- [ ] Centralize WebSocket URL construction via `frontend/src/config/environment.ts`
+- [x] Centralize WebSocket URL construction via `frontend/src/config/environment.ts`
   - Estimate: 0.5 day
   - Depends on: typed environment helpers
-- [ ] Standardize API client usage to `enhancedApi`; phase out base `api.ts`
+- [x] Standardize API client usage to `enhancedApi`; phase out base `api.ts`
   - Estimate: 1–2 days
   - Depends on: Fix enhancedApi typing and interceptors
-- [ ] Ensure services use `utils/errorHandler` consistently for API errors
+- [x] Ensure services use `utils/errorHandler` consistently for API errors
   - Estimate: 0.5–1 day
   - Depends on: Standardized API client usage
-- [ ] Normalize env usage: replace `(import.meta as any).env` with typed helpers
+- [x] Normalize env usage: replace `(import.meta as any).env` with typed helpers
   - Estimate: 0.5 day
   - Depends on: `frontend/src/config/environment.ts`
-- [ ] Use `utils/logger` consistently; remove direct `console.*` calls
+- [x] Use `utils/logger` consistently; remove direct `console.*` calls
   - Estimate: 0.5–1 day
   - Depends on: none
 

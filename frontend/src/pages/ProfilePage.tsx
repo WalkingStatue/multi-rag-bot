@@ -5,12 +5,12 @@
  */
 import React from 'react';
 import { UserProfile } from '../components/auth/UserProfile';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { EnhancedProtectedRoute } from '../components/routing/EnhancedProtectedRoute';
 import { MainLayout } from '../layouts';
 
 export const ProfilePage: React.FC = () => {
   return (
-    <ProtectedRoute>
+    <EnhancedProtectedRoute>
       <MainLayout
         title="Profile Settings"
         subtitle="Manage your account settings and preferences"
@@ -20,6 +20,6 @@ export const ProfilePage: React.FC = () => {
       >
         <UserProfile />
       </MainLayout>
-    </ProtectedRoute>
+    </EnhancedProtectedRoute>
   );
 };

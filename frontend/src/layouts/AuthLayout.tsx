@@ -22,32 +22,38 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   footer,
 }) => {
   return (
-    <div className={`min-h-dvh bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${className}`}>
-      <div className="max-w-md w-full space-y-8">
-        {(title || subtitle) && (
-          <div className="text-center">
-            {title && (
-              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-                {title}
-              </h2>
-            )}
-            {subtitle && (
-              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                {subtitle}
-              </div>
-            )}
-          </div>
-        )}
-        
-        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm py-8 px-6 sm:px-10">
-          {children}
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-purple-950/20 text-neutral-900 dark:text-neutral-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${className}`}>
+      <div className="w-full max-w-md mx-auto">
+        {/* Background decorations */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-100 dark:bg-blue-900/20 opacity-50 blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-purple-100 dark:bg-purple-900/20 opacity-50 blur-3xl"></div>
         </div>
         
-        {footer && (
-          <div className="mt-6 text-center">
-            {footer}
-          </div>
-        )}
+        <div className="relative">
+          {(title || subtitle) && (
+            <div className="text-center mb-8">
+              {title && (
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+                  {title}
+                </h2>
+              )}
+              {subtitle && (
+                <div className="text-neutral-600 dark:text-neutral-400">
+                  {subtitle}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {children}
+          
+          {footer && (
+            <div className="mt-8 text-center">
+              {footer}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

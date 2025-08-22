@@ -5,7 +5,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { LoginForm } from '../components/auth/LoginForm';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { PublicRoute } from '../components/routing/EnhancedProtectedRoute';
 import { AuthLayout } from '../layouts';
 
 export const LoginPage: React.FC = () => {
@@ -31,7 +31,7 @@ export const LoginPage: React.FC = () => {
   );
 
   return (
-    <ProtectedRoute requireAuth={false}>
+    <PublicRoute>
       <AuthLayout
         title="Sign in to your account"
         subtitle="Welcome back! Please enter your credentials to access your account."
@@ -39,6 +39,6 @@ export const LoginPage: React.FC = () => {
       >
         <LoginForm onSuccess={handleLoginSuccess} />
       </AuthLayout>
-    </ProtectedRoute>
+    </PublicRoute>
   );
 };

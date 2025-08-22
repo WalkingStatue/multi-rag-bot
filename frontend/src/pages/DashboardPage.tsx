@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { EnhancedProtectedRoute } from '../components/routing/EnhancedProtectedRoute';
 import { BotManagement } from '../components/bots/BotManagement';
 import { APIKeyManagement } from '../components/apikeys/APIKeyManagement';
 import { botService } from '../services/botService';
@@ -450,7 +450,7 @@ export const DashboardPage: React.FC = () => {
   );
 
   return (
-    <ProtectedRoute>
+    <EnhancedProtectedRoute>
       <MainLayout
         title={getPageHeader().title}
         subtitle={getPageHeader().subtitle}
@@ -460,6 +460,6 @@ export const DashboardPage: React.FC = () => {
       >
         {renderContent()}
       </MainLayout>
-    </ProtectedRoute>
+    </EnhancedProtectedRoute>
   );
 };

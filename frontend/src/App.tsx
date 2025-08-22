@@ -4,11 +4,15 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { EnhancedErrorBoundary } from './components/common/EnhancedErrorBoundary';
 import { ToastProvider } from './components/common/Toast';
 import { useEffect } from 'react';
 
 // Import pages
+import { RootPage } from './pages/RootPage';
+import { FeaturesPage } from './pages/FeaturesPage';
+import { PricingPage } from './pages/PricingPage';
+import { DocumentationPage } from './pages/DocumentationPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
@@ -48,16 +52,24 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <ErrorBoundary>
+    <EnhancedErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <Router>
             <div className="App">
               <Routes>
+                {/* Public marketing pages */}
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/docs" element={<DocumentationPage />} />
+                
+                {/* Authentication pages */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+                
+                {/* Protected application pages */}
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/bots" element={<DashboardPage />} />
@@ -65,7 +77,9 @@ function App() {
                 <Route path="/bots/:botId/documents" element={<DocumentManagementPage />} />
                 <Route path="/bots/:botId/collaboration" element={<CollaborationPage />} />
                 <Route path="/bots/:botId/integrations" element={<BotIntegrationsPage />} />
-                <Route path="/" element={<DashboardPage />} />
+                
+                {/* Root route */}
+                <Route path="/" element={<RootPage />} />
                 <Route path="*" element={
                   <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center px-4">
                     <div className="text-center max-w-md mx-auto">
@@ -100,7 +114,7 @@ function App() {
           </Router>
         </ToastProvider>
       </QueryClientProvider>
-    </ErrorBoundary>
+    </EnhancedErrorBoundary>
   );
 }
 

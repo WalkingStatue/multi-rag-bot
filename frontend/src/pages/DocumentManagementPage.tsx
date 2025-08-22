@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { EnhancedProtectedRoute } from '../components/routing/EnhancedProtectedRoute';
 import DocumentManagement from '../components/documents/DocumentManagement';
 import { botService } from '../services/botService';
 import { Button, Container, PageLoading, PageError } from '../components/common';
@@ -70,7 +70,7 @@ const DocumentManagementPage: React.FC = () => {
 
   if (!botId) {
     return (
-      <ProtectedRoute>
+      <EnhancedProtectedRoute>
         <MainLayout>
           <PageError
             title="Bot ID Required"
@@ -79,23 +79,23 @@ const DocumentManagementPage: React.FC = () => {
             onAction={() => navigate('/dashboard')}
           />
         </MainLayout>
-      </ProtectedRoute>
+      </EnhancedProtectedRoute>
     );
   }
 
   if (isLoading) {
     return (
-      <ProtectedRoute>
+      <EnhancedProtectedRoute>
         <MainLayout>
           <PageLoading message="Loading documents..." />
         </MainLayout>
-      </ProtectedRoute>
+      </EnhancedProtectedRoute>
     );
   }
 
   if (error || !bot) {
     return (
-      <ProtectedRoute>
+      <EnhancedProtectedRoute>
         <MainLayout>
           <PageError
             title="Unable to Load Documents"
@@ -104,12 +104,12 @@ const DocumentManagementPage: React.FC = () => {
             onAction={() => navigate('/dashboard')}
           />
         </MainLayout>
-      </ProtectedRoute>
+      </EnhancedProtectedRoute>
     );
   }
 
   return (
-    <ProtectedRoute>
+    <EnhancedProtectedRoute>
       <MainLayout
         title={bot ? `${bot.name} Documents` : 'Documents'}
         subtitle={bot?.description}
@@ -120,7 +120,7 @@ const DocumentManagementPage: React.FC = () => {
       >
         <DocumentManagement botId={botId} />
       </MainLayout>
-    </ProtectedRoute>
+    </EnhancedProtectedRoute>
   );
 };
 

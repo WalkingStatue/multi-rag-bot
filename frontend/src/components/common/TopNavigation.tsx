@@ -141,35 +141,40 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {user && (
-              <>
-                {/* Main Navigation Links */}
-                <div className="flex space-x-1">
-                  {navigationItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 flex items-center space-x-2 ${
-                        isActive(item.href)
-                          ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-100'
-                      }`}
-                    >
-                      {item.icon}
-                      <span>{item.name}</span>
-                    </Link>
-                  ))}
-                </div>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center justify-center flex-1">
+          {user && (
+            <>
+              {/* Main Navigation Links - Centered */}
+              <div className="flex space-x-2 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-1">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+                      isActive(item.href)
+                        ? 'bg-white dark:bg-neutral-700 text-primary-700 dark:text-primary-300 shadow-sm'
+                        : 'text-neutral-600 hover:bg-white/60 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-700/50 dark:hover:text-neutral-100'
+                    }`}
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
-                {/* Divider */}
-                <div className="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
+        {/* Right Side Actions */}
+        <div className="hidden md:flex items-center space-x-4">
+          {user && (
+            <>
+              {/* Notifications */}
+              <NotificationSystem />
+            </>
+          )}
 
-                {/* Notifications */}
-                <NotificationSystem />
-              </>
-            )}
 
             {/* Theme Toggle */}
             <button

@@ -5,7 +5,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { RegisterForm } from '../components/auth/RegisterForm';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { PublicRoute } from '../components/routing/EnhancedProtectedRoute';
 import { AuthLayout } from '../layouts';
 
 export const RegisterPage: React.FC = () => {
@@ -29,7 +29,7 @@ export const RegisterPage: React.FC = () => {
   );
 
   return (
-    <ProtectedRoute requireAuth={false}>
+    <PublicRoute>
       <AuthLayout
         title="Create your account"
         subtitle="Fill in your details to get started with our platform."
@@ -37,6 +37,6 @@ export const RegisterPage: React.FC = () => {
       >
         <RegisterForm onSuccess={handleRegisterSuccess} />
       </AuthLayout>
-    </ProtectedRoute>
+    </PublicRoute>
   );
 };

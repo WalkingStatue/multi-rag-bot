@@ -48,12 +48,6 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ botId }) => {
 
   return (
     <div className="document-management space-y-6">
-      <div className="document-management-header">
-        <h2 className="text-2xl font-bold text-gray-900">Document Management</h2>
-        <p className="text-gray-600 mt-1">
-          Upload and manage documents for this bot's knowledge base
-        </p>
-      </div>
 
       {/* Success/Error Messages */}
       {uploadSuccess && (

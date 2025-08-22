@@ -4,7 +4,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ForgotPasswordForm } from '../components/auth/ForgotPasswordForm';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { PublicRoute } from '../components/routing/EnhancedProtectedRoute';
 import { AuthLayout } from '../layouts';
 
 export const ForgotPasswordPage: React.FC = () => {
@@ -22,7 +22,7 @@ export const ForgotPasswordPage: React.FC = () => {
   );
 
   return (
-    <ProtectedRoute requireAuth={false}>
+    <PublicRoute>
       <AuthLayout
         title="Reset your password"
         subtitle="Enter your email address and we'll send you a link to reset your password."
@@ -30,6 +30,6 @@ export const ForgotPasswordPage: React.FC = () => {
       >
         <ForgotPasswordForm />
       </AuthLayout>
-    </ProtectedRoute>
+    </PublicRoute>
   );
 };
