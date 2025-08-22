@@ -22,6 +22,16 @@ from .user_service import UserService
 from .enhanced_api_key_service import EnhancedAPIKeyService
 from .rag_error_recovery import RAGErrorRecovery, ErrorContext, ErrorCategory, ErrorSeverity
 from .comprehensive_error_handler import ComprehensiveErrorHandler, ErrorHandlingConfig
+from .query_classifier import QueryClassifier
+from .hybrid_retrieval_orchestrator import (
+    HybridRetrievalOrchestrator,
+    AdvancedQueryAnalyzer,
+    AdaptiveRoutingStrategy,
+    ResponseBlender,
+    RetrievalMode
+)
+from .context_aware_cache_manager import ContextAwareCacheManager, CacheStrategy
+from .hybrid_performance_monitor import HybridPerformanceMonitor, HybridRetrievalConfig
 
 
 logger = logging.getLogger(__name__)
@@ -34,11 +44,11 @@ def get_websocket_service():
 
 
 class ChatService:
-    """Service for processing chat messages with RAG integration."""
+    """Service for processing chat messages with hybrid RAG integration."""
     
     def __init__(self, db: Session):
         """
-        Initialize chat service with required dependencies.
+        Initialize chat service with hybrid retrieval system.
         
         Args:
             db: Database session
@@ -62,6 +72,9 @@ class ChatService:
         )
         self.comprehensive_error_handler = ComprehensiveErrorHandler(db, error_config)
         
+        # Initialize query classifier for smart retrieval decisions
+        self.query_classifier = QueryClassifier()
+        
         # Configuration
         self.max_history_messages = 10
         self.max_retrieved_chunks = 5
@@ -74,6 +87,59 @@ class ChatService:
         self.default_similarity_threshold = 0.3
         self.max_prompt_length = 8000
         self.enable_graceful_degradation = True
+        
+        # Initialize hybrid retrieval components
+        self._initialize_hybrid_components()
+        logger.info("Hybrid retrieval system initialized successfully")
+        
+        # Initialize async components in background
+        asyncio.create_task(self._init_hybrid_async_components())
+    
+    def _initialize_hybrid_components(self):
+        """Initialize hybrid retrieval components."""
+        # Initialize config
+        self.hybrid_config = HybridRetrievalConfig()
+        
+        # Initialize orchestrator
+        self.hybrid_orchestrator = HybridRetrievalOrchestrator(
+            db=self.db,
+            vector_service=self.vector_service,
+            llm_service=self.llm_service,
+            embedding_service=self.embedding_service
+        )
+        
+        # Initialize cache manager
+        try:
+            import redis.asyncio as redis
+            redis_client = redis.from_url(
+                "redis://localhost:6379",
+                encoding="utf-8",
+                decode_responses=False
+            )
+            self.cache_manager = ContextAwareCacheManager(
+                redis_client=redis_client,
+                strategy=CacheStrategy.ADAPTIVE
+            )
+        except Exception as e:
+            logger.warning(f"Redis not available, using local cache: {e}")
+            self.cache_manager = ContextAwareCacheManager(
+                strategy=CacheStrategy.ADAPTIVE
+            )
+        
+        # Initialize performance monitor
+        self.performance_monitor = HybridPerformanceMonitor(
+            db_session=self.db,
+            config=self.hybrid_config
+        )
+    
+    async def _init_hybrid_async_components(self):
+        """Initialize async components for hybrid system."""
+        try:
+            await self.cache_manager.initialize()
+            await self.performance_monitor.initialize()
+            logger.info("Hybrid async components initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize hybrid async components: {e}")
     
     async def process_message(
         self,
@@ -125,22 +191,65 @@ class ChatService:
                 session.id, bot_id, user_id, chat_request.message
             )
             
-            # Step 5: Retrieve relevant document chunks using RAG with error recovery
-            relevant_chunks, rag_metadata = await self._retrieve_relevant_chunks_with_recovery(
-                bot, chat_request.message, user_id
+            # Step 5: Smart retrieval decision using hybrid system
+            conversation_history_for_classifier = await self._get_conversation_history_for_classifier(
+                session.id, user_id, exclude_current_message=chat_request.message
             )
             
-            # Step 6: Get conversation history (excluding current message)
+            # Use hybrid retrieval decision system
+            retrieval_decision = await self._get_hybrid_retrieval_decision(
+                chat_request.message,
+                conversation_history_for_classifier,
+                bot,
+                user_id
+            )
+            
+            logger.info(f"Hybrid retrieval decision for bot {bot.id}: {retrieval_decision.reasoning}")
+            
+            # Initialize RAG metadata with hybrid decision info
+            rag_metadata = {
+                "retrieval_decision_made": True,
+                "should_retrieve": retrieval_decision.should_retrieve,
+                "query_type": retrieval_decision.query_type.value,
+                "decision_confidence": retrieval_decision.confidence,
+                "decision_reasoning": retrieval_decision.reasoning,
+                "rag_enabled": retrieval_decision.should_retrieve,
+                "fallback_used": not retrieval_decision.should_retrieve,
+                "degradation_reason": None if retrieval_decision.should_retrieve else "smart_decision_skip",
+                "hybrid_mode": retrieval_decision.metadata.get("hybrid_mode") if hasattr(retrieval_decision, "metadata") else None
+            }
+            
+            # Step 6: Retrieve relevant document chunks if decision says we should
+            relevant_chunks = []
+            if retrieval_decision.should_retrieve:
+                try:
+                    relevant_chunks, retrieval_metadata = await self._retrieve_relevant_chunks_with_recovery(
+                        bot, chat_request.message, user_id
+                    )
+                    # Merge retrieval metadata
+                    rag_metadata.update(retrieval_metadata)
+                except Exception as e:
+                    logger.error(f"Retrieval failed even though decision was to retrieve: {e}")
+                    # Update metadata to reflect the failure
+                    rag_metadata.update({
+                        "retrieval_failed_after_decision": True,
+                        "retrieval_error": str(e),
+                        "rag_enabled": False,
+                        "fallback_used": True,
+                        "degradation_reason": "retrieval_failed_post_decision"
+                    })
+            
+            # Step 7: Get conversation history (excluding current message)
             conversation_history = await self._get_conversation_history(
                 session.id, user_id, exclude_current_message=chat_request.message
             )
             
-            # Step 7: Build prompt with context
+            # Step 8: Build prompt with context
             prompt = await self._build_prompt(
                 bot, conversation_history, relevant_chunks, chat_request.message
             )
             
-            # Step 8: Generate response using configured LLM
+            # Step 9: Generate response using configured LLM
             response_text, response_metadata = await self._generate_response(
                 bot, user_id, prompt
             )
@@ -342,6 +451,45 @@ class ChatService:
         
         return self.conversation_service.add_message(user_id, message_data)
     
+    async def _get_hybrid_retrieval_decision(self, query, conversation_history, bot, user_id):
+        """Get retrieval decision from hybrid system."""
+        # Use advanced analyzer from hybrid system
+        analyzer = AdvancedQueryAnalyzer()
+        characteristics = analyzer.analyze_query(
+            query=query,
+            conversation_history=conversation_history
+        )
+        
+        # Use adaptive routing strategy
+        router = AdaptiveRoutingStrategy()
+        decision = router.determine_retrieval_strategy(
+            characteristics=characteristics,
+            available_documents=await self._get_document_count(bot.id),
+            system_load=0.5  # Could be dynamically determined
+        )
+        
+        # Convert to standard retrieval decision format
+        from .query_classifier import RetrievalDecision as StandardDecision
+        return StandardDecision(
+            should_retrieve=decision.retrieval_depth > 0,
+            confidence=decision.confidence,
+            query_type=characteristics.intent,
+            reasoning=decision.rationale,
+            metadata={
+                "hybrid_mode": decision.mode.value,
+                "document_weight": decision.document_weight,
+                "llm_weight": decision.llm_weight
+            }
+        )
+    
+    async def _get_document_count(self, bot_id: uuid.UUID) -> int:
+        """Get count of documents for a bot."""
+        try:
+            from ..models.document import Document
+            return self.db.query(Document).filter(Document.bot_id == bot_id).count()
+        except Exception:
+            return 0
+    
     async def _retrieve_relevant_chunks_with_recovery(
         self,
         bot: Bot,
@@ -349,16 +497,22 @@ class ChatService:
         user_id: uuid.UUID
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """
-        Retrieve relevant document chunks with comprehensive error recovery.
+        Retrieve relevant document chunks using hybrid retrieval system.
         
         Returns:
-            Tuple of (chunks, metadata) where metadata includes error recovery information
+            Tuple of (chunks, metadata) where metadata includes retrieval information
         """
+        # Use hybrid retrieval system
+        hybrid_result = await self._retrieve_with_hybrid_system(bot, query, user_id)
+        if hybrid_result is not None:
+            return hybrid_result
+        
+        # If hybrid fails completely, fall back to basic retrieval with error recovery
         recovery_metadata = {
             "rag_enabled": True,
-            "fallback_used": False,
+            "fallback_used": True,
             "error_recovery_applied": False,
-            "degradation_reason": None
+            "degradation_reason": "hybrid_retrieval_failed"
         }
         
         try:
@@ -443,6 +597,102 @@ class ChatService:
                 return [], recovery_metadata
             
             raise
+    
+    async def _retrieve_with_hybrid_system(
+        self,
+        bot: Bot,
+        query: str,
+        user_id: uuid.UUID
+    ) -> Optional[Tuple[List[Dict[str, Any]], Dict[str, Any]]]:
+        """Retrieve using hybrid system."""
+        try:
+            # Check cache first
+            cache_context = {
+                "bot_id": str(bot.id),
+                "provider": bot.embedding_provider,
+                "model": bot.embedding_model
+            }
+            
+            cached_entry = await self.cache_manager.get(
+                query=query,
+                bot_id=str(bot.id),
+                user_id=str(user_id),
+                context=cache_context
+            )
+            
+            if cached_entry:
+                logger.info(f"Cache hit for hybrid retrieval: bot {bot.id}")
+                chunks = cached_entry.metadata.get("chunks", [])
+                metadata = {
+                    "hybrid_mode": cached_entry.mode_used,
+                    "cache_hit": True,
+                    "confidence": cached_entry.confidence_score
+                }
+                return chunks, metadata
+            
+            # Use hybrid orchestrator
+            response = await self.hybrid_orchestrator.process_query(
+                query=query,
+                bot_id=bot.id,
+                user_id=user_id
+            )
+            
+            # Convert to chunks format
+            chunks = self._extract_chunks_from_hybrid_response(response)
+            
+            metadata = {
+                "hybrid_mode": response.mode_used.value,
+                "hybrid_confidence": response.confidence_score,
+                "document_contribution": response.document_contribution,
+                "llm_contribution": response.llm_contribution,
+                "information_density": response.information_density.name,
+                "processing_time": response.processing_time,
+                "cache_hit": False
+            }
+            
+            # Cache the result
+            await self._cache_hybrid_result(query, bot.id, user_id, response, chunks)
+            
+            # Record performance
+            await self.performance_monitor.record_query_performance(
+                query_id=str(uuid.uuid4()),
+                bot_id=str(bot.id),
+                user_id=str(user_id),
+                mode_used=response.mode_used.value,
+                response_time=response.processing_time,
+                confidence_score=response.confidence_score,
+                cache_hit=False,
+                document_count=len(chunks)
+            )
+            
+            return chunks, metadata
+            
+        except Exception as e:
+            logger.error(f"Hybrid retrieval failed: {e}")
+            return None
+    
+    def _extract_chunks_from_hybrid_response(self, response):
+        """Extract chunks from hybrid response."""
+        if response.metadata and "chunks" in response.metadata:
+            return response.metadata["chunks"]
+        return []
+    
+    async def _cache_hybrid_result(self, query, bot_id, user_id, response, chunks):
+        """Cache hybrid retrieval result."""
+        try:
+            response.metadata["chunks"] = chunks
+            await self.cache_manager.set(
+                query=query,
+                bot_id=str(bot_id),
+                user_id=str(user_id),
+                response=response,
+                context={
+                    "bot_id": str(bot_id),
+                    "mode": response.mode_used.value
+                }
+            )
+        except Exception as e:
+            logger.error(f"Failed to cache hybrid result: {e}")
     
     def _categorize_rag_error(self, error: Exception) -> ErrorCategory:
         """Categorize RAG-specific errors."""
@@ -694,6 +944,33 @@ class ChatService:
             
         except Exception as e:
             logger.error(f"Failed to get conversation history for session {session_id}: {e}")
+            return []
+    
+    async def _get_conversation_history_for_classifier(
+        self,
+        session_id: uuid.UUID,
+        user_id: uuid.UUID,
+        exclude_current_message: Optional[str] = None
+    ) -> List[Dict[str, str]]:
+        """Get conversation history formatted for the query classifier."""
+        try:
+            # Get messages for classifier (fewer messages needed)
+            messages = await self._get_conversation_history(
+                session_id, user_id, exclude_current_message
+            )
+            
+            # Format for classifier - it expects a list of dicts with 'role' and 'content'
+            formatted_history = []
+            for msg in messages[-5:]:  # Only last 5 messages for context
+                formatted_history.append({
+                    "role": msg.role,
+                    "content": msg.content
+                })
+            
+            return formatted_history
+            
+        except Exception as e:
+            logger.error(f"Failed to get conversation history for classifier: {e}")
             return []
     
     async def _build_prompt(
@@ -1189,6 +1466,11 @@ class ChatService:
     async def close(self):
         """Close all service connections and clean up resources."""
         try:
+            # Close hybrid components
+            await self.cache_manager.close()
+            await self.performance_monitor.close()
+            logger.info("Closed hybrid components")
+            
             await self.llm_service.close()
             await self.embedding_service.close()
             await self.vector_service.close()

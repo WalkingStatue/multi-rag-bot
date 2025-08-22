@@ -1,0 +1,129 @@
+## Project Tasks (Prioritized)
+
+### High Priority
+- [ ] Improve document retrieval with smart context switching for LLM and retrieval
+  - Estimate: 4–6 days
+  - Depends on: none
+- [ ] Introduce Redis-based caching (review current caching and integrate)
+  - Estimate: 1–2 days
+  - Depends on: none
+- [ ] Standardize error handling across all pages (consistent UX + fallback)
+  - Estimate: 1–2 days
+  - Depends on: Use `utils/logger` consistently
+- [ ] Add API key generation for Bots API
+  - Estimate: 0.5–1 day
+  - Depends on: none
+- [ ] Create API docs page
+  - Estimate: 1 day
+  - Depends on: stable API routes and auth
+- [ ] Consolidate WebSocket services into a single core with adapters (frontend)
+  - Estimate: 2–3 days
+  - Depends on: Centralize WebSocket URL; Consolidate WS message schema; Normalize env usage
+- [ ] Fix EnhancedWebSocketService.connect implementation and typing
+  - Estimate: 0.5 day
+  - Depends on: WebSocket core consolidation
+- [ ] Centralize WebSocket URL construction via `frontend/src/config/environment.ts`
+  - Estimate: 0.5 day
+  - Depends on: typed environment helpers
+- [ ] Standardize API client usage to `enhancedApi`; phase out base `api.ts`
+  - Estimate: 1–2 days
+  - Depends on: Fix enhancedApi typing and interceptors
+- [ ] Ensure services use `utils/errorHandler` consistently for API errors
+  - Estimate: 0.5–1 day
+  - Depends on: Standardized API client usage
+- [ ] Normalize env usage: replace `(import.meta as any).env` with typed helpers
+  - Estimate: 0.5 day
+  - Depends on: `frontend/src/config/environment.ts`
+- [ ] Use `utils/logger` consistently; remove direct `console.*` calls
+  - Estimate: 0.5–1 day
+  - Depends on: none
+
+### Medium Priority
+- [ ] Standardize on `EnhancedProtectedRoute`; remove basic `ProtectedRoute` usages
+  - Estimate: 0.5–1 day
+  - Depends on: Add missing prop typing; `useEnhancedAuth` adoption
+- [ ] Add missing prop typing (e.g., `showLoadingOverlay`) to `EnhancedProtectedRoute`
+  - Estimate: 0.25 day
+  - Depends on: none
+- [ ] Replace simple `ErrorBoundary` with `EnhancedErrorBoundary`; remove legacy component
+  - Estimate: 0.5–1 day
+  - Depends on: Logger usage normalization
+- [ ] Migrate services to `enhancedApi`/`offlineAwareApi`; deprecate base `api.ts`
+  - Estimate: 1 day
+  - Depends on: Standardized API client usage
+- [ ] Consolidate connection health/diagnostics into one module
+  - Estimate: 1 day
+  - Depends on: WS consolidation; Logger normalization
+- [ ] Consolidate chat WebSocket message schema into `types/chat` and share
+  - Estimate: 0.5–1 day
+  - Depends on: none
+- [ ] Standardize auth hooks: migrate to `useEnhancedAuth`; remove redundant `useAuth`
+  - Estimate: 1 day
+  - Depends on: Error boundaries and protected routes updated
+- [ ] Deduplicate layout wrappers (`BaseLayout`/`MainLayout`/`PageLayout`); choose a single base
+  - Estimate: 1–2 days
+  - Depends on: Page consistency initiative
+- [ ] Apply shared form primitives (`FormField`/`Input`) across forms
+  - Estimate: 1 day
+  - Depends on: none
+- [ ] Unify modal components into a single accessible modal
+  - Estimate: 0.5–1 day
+  - Depends on: accessibility review
+- [ ] Consolidate loading states into shared primitives
+  - Estimate: 0.5 day
+  - Depends on: shared component decisions
+- [ ] Lazy-load pages in `frontend/src/config/routes.tsx` to reduce bundle size
+  - Estimate: 0.5 day
+  - Depends on: routes structure stabilized
+- [ ] Normalize spacing/color tokens via `styles/theme.ts`; reduce inline class divergence
+  - Estimate: 1–2 days
+  - Depends on: design token decisions
+- [ ] Backend: extract shared WebSocket auth/handlers used by chat/notifications/widget
+  - Estimate: 1–2 days
+  - Depends on: none
+- [ ] Backend: reconcile `embedding_service` vs `enhanced_embedding_service` via a single interface
+  - Estimate: 2–3 days
+  - Depends on: retrieval design updates
+- [ ] Backend: merge chunk optimization services (`optimized_chunk_storage`/`chunk_storage_optimizer`)
+  - Estimate: 1–2 days
+  - Depends on: vector store API unification plan
+- [ ] Backend: unify vector store management (`vector_store`/`vector_collection_manager`) APIs
+  - Estimate: 1–2 days
+  - Depends on: retrieval improvements plan
+- [ ] Backend: centralize error-handling patterns; reduce overlap with `api_key_error_handler`
+  - Estimate: 1 day
+  - Depends on: `ComprehensiveErrorHandler` baseline
+- [ ] Fix typos and naming consistency across code and TODO entries
+  - Estimate: 0.25 day
+  - Depends on: none
+
+### Low Priority
+- [ ] Make all pages look visually consistent and add a Back button
+  - Estimate: 1 day
+  - Depends on: layout deduplication
+- [ ] Improve Bot Create/Edit forms styling
+  - Estimate: 0.5 day
+  - Depends on: shared form primitives
+- [ ] Add more options to customize the chat widget (color, widget image, logo)
+  - Estimate: 1–2 days
+  - Depends on: theme tokens
+- [ ] Remove the iframe embed from Integrations
+  - Estimate: 0.5 day
+  - Depends on: none
+- [ ] Replace icon components with SVGs where appropriate
+  - Estimate: 0.5 day
+  - Depends on: icon set decision
+- [ ] Fix Dashboard UI: add missing padding to affected div
+  - Estimate: 0.25 day
+  - Depends on: none
+- [ ] Center Dashboard and Bots menu items on TopNav
+  - Estimate: 0.25 day
+  - Depends on: layout style selection
+- [ ] Fix double heading on Documents Management page
+  - Estimate: 0.25 day
+  - Depends on: none
+- [ ] Add a landing page
+  - Estimate: 1–2 days
+  - Depends on: theme tokens and base layout
+
+
