@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:shared": "vite --mode shared",
+    "dev:tunnels": "vite --mode devtunnels",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:shared": "vite build --mode shared",
+    "build:tunnels": "vite build --mode devtunnels",
+    "preview": "vite preview",
+    "setup:sharing": "node setup-sharing.js"
   },
   "dependencies": {
     "react": "^18.2.0",

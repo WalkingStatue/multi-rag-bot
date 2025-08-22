@@ -107,6 +107,36 @@ const environmentConfigs: Record<string, DeepPartial<AppConfig>> = {
     },
   },
   
+  shared: {
+    // Shared development mode for port forwarding
+    features: {
+      enableDebugMode: true,
+      enableExperimentalFeatures: true,
+    },
+    development: {
+      enableApiLogging: true,
+      enablePerformanceMonitoring: true,
+    },
+    security: {
+      enableCSP: false, // Disable for easier development
+    },
+  },
+  
+  devtunnels: {
+    // VS Code dev tunnels mode
+    features: {
+      enableDebugMode: true,
+      enableExperimentalFeatures: true,
+    },
+    development: {
+      enableApiLogging: true,
+      enablePerformanceMonitoring: true,
+    },
+    security: {
+      enableCSP: false, // Disable for easier development with tunnels
+    },
+  },
+  
   staging: {
     apiUrl: 'https://staging-api.example.com',
     wsUrl: 'wss://staging-api.example.com',
@@ -149,15 +179,57 @@ const getEnvironment = (): string => {
   return import.meta.env.MODE || 'development';
 };
 
+// Dynamic API URL detection
+const detectApiUrls = (): { apiUrl: string; wsUrl: string } => {
+  // If environment variables are set, use them
+  if (import.meta.env.VITE_API_URL) {
+    return {
+      apiUrl: import.meta.env.VITE_API_URL,
+      wsUrl: import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_URL.replace('http', 'ws'),
+    };
+  }
+  
+  // Auto-detect based on current URL
+  if (typeof window !== 'undefined') {
+    const currentHost = window.location.host;
+    const protocol = window.location.protocol;
+    const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+    
+    // If accessing via dev tunnels
+    if (currentHost.includes('devtunnels.ms')) {
+      const tunnelBase = currentHost.replace('-3000', '-8000');
+      return {
+        apiUrl: `${protocol}//${tunnelBase}`,
+        wsUrl: `${wsProtocol}//${tunnelBase}`,
+      };
+    }
+    
+    // If accessing via localhost (you)
+    if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+      return {
+        apiUrl: 'http://localhost:8000',
+        wsUrl: 'ws://localhost:8000',
+      };
+    }
+  }
+  
+  // Fallback to default
+  return {
+    apiUrl: defaultConfig.apiUrl,
+    wsUrl: defaultConfig.wsUrl,
+  };
+};
+
 // Merge configurations
 const createConfig = (): AppConfig => {
   const env = getEnvironment();
   const envConfig = environmentConfigs[env] || {};
+  const detectedUrls = detectApiUrls();
   
-  // Override with environment variables
+  // Override with environment variables or detected URLs
   const envVarOverrides: DeepPartial<AppConfig> = {
-    apiUrl: import.meta.env.VITE_API_URL || defaultConfig.apiUrl,
-    wsUrl: import.meta.env.VITE_WS_URL || defaultConfig.wsUrl,
+    apiUrl: detectedUrls.apiUrl,
+    wsUrl: detectedUrls.wsUrl,
     appName: import.meta.env.VITE_APP_NAME || defaultConfig.appName,
     appVersion: import.meta.env.VITE_APP_VERSION || defaultConfig.appVersion,
   };

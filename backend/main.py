@@ -18,9 +18,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        settings.frontend_url,  # Frontend application
-        "http://localhost:3000",  # Development frontend
+        settings.frontend_url,  # Frontend application from config
+        "http://localhost:3000",  # Local development frontend
         "http://127.0.0.1:3000",  # Alternative localhost
+        "https://pmpr6m1k-3000.inc1.devtunnels.ms",  # VS Code dev tunnels frontend
+        "https://pmpr6m1k-8000.inc1.devtunnels.ms",  # VS Code dev tunnels backend (for WebSocket)
+        # Allow all dev tunnels in debug mode
+        "*" if settings.debug else settings.frontend_url  # Allow all origins in debug mode
     ],
     allow_credentials=True,  # Enable credentials for authentication
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
