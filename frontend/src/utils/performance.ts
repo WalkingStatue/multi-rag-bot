@@ -3,6 +3,8 @@
  */
 
 import { logger } from './logger';
+import { log } from '../utils/logger';
+import { getEnvVar } from '../config/environment';
 
 // Performance metrics interface
 export interface PerformanceMetric {
@@ -31,7 +33,7 @@ class PerformanceMonitor {
   private isEnabled: boolean;
 
   constructor() {
-    this.isEnabled = import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING !== 'false';
+    this.isEnabled = getEnvVar.get('VITE_ENABLE_PERFORMANCE_MONITORING', '') !== 'false';
     
     if (this.isEnabled && typeof window !== 'undefined') {
       this.initializeObservers();
@@ -257,8 +259,7 @@ class PerformanceMonitor {
   private sendToAnalytics(metric: PerformanceMetric): void {
     // Implement your analytics service integration here
     // Example: Google Analytics, DataDog, New Relic, etc.
-    if (import.meta.env.DEV) {
-      console.log('Performance Metric:', metric);
+    if (getEnvVar.DEV()) { log.info('Performance Metric:', 'performance', { metric });
     }
   }
 

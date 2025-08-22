@@ -7,6 +7,7 @@ import { useChatStore } from '../../stores/chatStore';
 import { chatService } from '../../services/chatService';
 import { ConversationSearchResult } from '../../types/chat';
 import { formatDistanceToNow } from 'date-fns';
+import { log } from '../../utils/logger';
 
 interface ChatSearchProps {
   botId?: string;
@@ -77,8 +78,7 @@ export const ChatSearch: React.FC<ChatSearchProps> = ({
       const response = await chatService.searchConversations(query, botId);
       setResults(response.results);
       setSearchResults(response.results);
-    } catch (error) {
-      console.error('Search failed:', error);
+    } catch (error) { log.error('Search failed:', 'ChatSearch', { error });
       setResults([]);
       setSearchResults([]);
     } finally {

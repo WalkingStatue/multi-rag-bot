@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, AlertCircle, CheckCircle, XCircle, Info } from 'lucide-react';
+import { log } from '../../utils/logger';
 
 interface RAGTestResult {
   test_query: string;
@@ -47,8 +48,7 @@ const RAGTester: React.FC<RAGTesterProps> = ({ botId, onClose }) => {
 
       const result = await response.json();
       setTestResult(result);
-    } catch (error) {
-      console.error('RAG test failed:', error);
+    } catch (error) { log.error('RAG test failed:', 'RAGTester', { error });
       setTestResult({
         test_query: testQuery,
         bot_config: {

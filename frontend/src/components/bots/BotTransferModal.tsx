@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { BotWithRole, BotTransferRequest } from '../../types/bot';
 import { botService } from '../../services/botService';
 import { Button } from '../common/Button';
+import { log } from '../../utils/logger';
 
 interface BotTransferModalProps {
   bot: BotWithRole;
@@ -55,8 +56,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
         setSearchError(null);
         const results = await botService.searchUsers(searchQuery);
         setSearchResults(results);
-      } catch (error) {
-        console.error('Failed to search users:', error);
+      } catch (error) { log.error('Failed to search users:', 'BotTransferModal', { error });
         setSearchError('Failed to search users. Please try again.');
         setSearchResults([]);
       } finally {
@@ -85,8 +85,7 @@ export const BotTransferModal: React.FC<BotTransferModalProps> = ({
       setIsTransferring(true);
       await onTransfer(bot.bot.id, { new_owner_id: selectedUser.id });
       onClose();
-    } catch (error) {
-      console.error('Failed to transfer ownership:', error);
+    } catch (error) { log.error('Failed to transfer ownership:', 'BotTransferModal', { error });
       setSearchError('Failed to transfer ownership. Please try again.');
     } finally {
       setIsTransferring(false);

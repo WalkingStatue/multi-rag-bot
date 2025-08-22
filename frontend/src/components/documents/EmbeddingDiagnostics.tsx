@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, XCircle, RefreshCw, Info } from 'lucide-react';
+import { log } from '../../utils/logger';
 
 interface DiagnosticResult {
   bot_id: string;
@@ -59,8 +60,7 @@ const EmbeddingDiagnostics: React.FC<EmbeddingDiagnosticsProps> = ({ botId, onCl
 
       const result = await response.json();
       setDiagnostics(result);
-    } catch (error) {
-      console.error('Diagnostics failed:', error);
+    } catch (error) { log.error('Diagnostics failed:', 'EmbeddingDiagnostics', { error });
       setDiagnostics({
         bot_id: botId,
         embedding_provider: 'unknown',
@@ -101,8 +101,7 @@ const EmbeddingDiagnostics: React.FC<EmbeddingDiagnosticsProps> = ({ botId, onCl
       setTimeout(() => {
         runDiagnostics();
       }, 1000);
-    } catch (error) {
-      console.error('Reprocessing failed:', error);
+    } catch (error) { log.error('Reprocessing failed:', 'EmbeddingDiagnostics', { error });
       setReprocessResult({
         success: false,
         message: error instanceof Error ? error.message : 'Reprocessing failed',

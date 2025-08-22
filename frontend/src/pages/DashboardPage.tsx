@@ -14,6 +14,7 @@ import { botService } from '../services/botService';
 import { Button, Card, Grid, Panel } from '../components/common';
 import { MainLayout } from '../layouts';
 import { BotWithRole } from '../types/bot';
+import { log } from '../utils/logger';
 
 export const DashboardPage: React.FC = () => {
   const location = useLocation();
@@ -105,8 +106,7 @@ export const DashboardPage: React.FC = () => {
           return lastUpdated > weekAgo;
         }).length
       });
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+    } catch (error) { log.error('Failed to load dashboard data:', 'DashboardPage', { error });
     } finally {
       setIsLoading(false);
     }

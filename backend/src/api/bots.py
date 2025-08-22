@@ -24,9 +24,14 @@ from ..schemas.bot import (
     MigrationStatusResponse, DimensionInfoResponse,
     ActiveMigrationsResponse, MigrationActionResponse
 )
+from ..schemas.bot_api_key import (
+    BotAPIKeyCreate, BotAPIKeyUpdate, BotAPIKeyResponse,
+    BotAPIKeyCreateResponse, BotAPIKeyListResponse
+)
 from ..services.bot_service import BotService
 from ..services.permission_service import PermissionService
 from ..services.embedding_compatibility_manager import EmbeddingCompatibilityManager
+from ..services.bot_api_key_service import BotAPIKeyService
 
 router = APIRouter(prefix="/bots", tags=["bots"])
 
@@ -836,3 +841,91 @@ async def validate_custom_threshold(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to validate threshold: {str(e)}"
         )
+
+
+# Bot API Key Management Endpoints
+
+@router.post("/{bot_id}/api-keys", response_model=BotAPIKeyCreateResponse, status_code=status.HTTP_201_CREATED)
+async def create_bot_api_key(
+    bot_id: uuid.UUID,
+    api_key_data: BotAPIKeyCreate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_owner_role)
+):
+    """
+    Create a new API key for a bot.
+    
+    Only the bot owner can create API keys.
+    The API key is shown only once in the response.
+    """
+    api_key_service = BotAPIKeyService(db)
+    return api_key_service.create_api_key(bot_id, current_user.id, api_key_data)
+
+
+@router.get("/{bot_id}/api-keys", response_model=List[BotAPIKeyResponse])
+async def list_bot_api_keys(
+    bot_id: uuid.UUID,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_owner_role)
+):
+    """
+    List all API keys for a bot.
+    
+    Only the bot owner can view API keys.
+    """
+    api_key_service = BotAPIKeyService(db)
+    return api_key_service.list_api_keys(bot_id, current_user.id)
+
+
+@router.get("/{bot_id}/api-keys/{key_id}", response_model=BotAPIKeyResponse)
+async def get_bot_api_key(
+    bot_id: uuid.UUID,
+    key_id: uuid.UUID,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_owner_role)
+):
+    """
+    Get details of a specific API key.
+    
+    Only the bot owner can view API key details.
+    """
+    api_key_service = BotAPIKeyService(db)
+    return api_key_service.get_api_key(bot_id, key_id, current_user.id)
+
+
+@router.put("/{bot_id}/api-keys/{key_id}", response_model=BotAPIKeyResponse)
+async def update_bot_api_key(
+    bot_id: uuid.UUID,
+    key_id: uuid.UUID,
+    update_data: BotAPIKeyUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_owner_role)
+):
+    """
+    Update an API key.
+    
+    Only the bot owner can update API keys.
+    """
+    api_key_service = BotAPIKeyService(db)
+    return api_key_service.update_api_key(bot_id, key_id, current_user.id, update_data)
+
+
+@router.delete("/{bot_id}/api-keys/{key_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_bot_api_key(
+    bot_id: uuid.UUID,
+    key_id: uuid.UUID,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_owner_role)
+):
+    """
+    Delete an API key.
+    
+    Only the bot owner can delete API keys.
+    """
+    api_key_service = BotAPIKeyService(db)
+    api_key_service.delete_api_key(bot_id, key_id, current_user.id)

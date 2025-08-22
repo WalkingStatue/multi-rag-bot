@@ -3,8 +3,10 @@
  */
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { parseApiError, errorHandler, AppError } from '../utils/errorHandler';
+import { log } from '../utils/logger';
+import { getEnvVar } from '../config/environment';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = getEnvVar.get('VITE_API_URL', '') || 'http://localhost:8000';
 const API_PREFIX = '/api';
 
 interface RetryConfig {
@@ -65,9 +67,9 @@ class EnhancedAPIClient {
     this.client.interceptors.response.use(
       (response) => {
         // Log successful requests in development
-        if (import.meta.env.DEV) {
+        if (getEnvVar.DEV()) {
           const duration = Date.now() - (response.config as any).metadata?.startTime;
-          console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`);
+          log.info(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`, 'enhancedApi');
         }
         return response;
       },

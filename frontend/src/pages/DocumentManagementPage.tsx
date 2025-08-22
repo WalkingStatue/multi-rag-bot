@@ -11,6 +11,7 @@ import { Button, Container, PageLoading, PageError } from '../components/common'
 import { MainLayout } from '../layouts';
 import { BotResponse } from '../types/bot';
 import { ArrowLeftIcon, ChatBubbleLeftRightIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { log } from '../utils/logger';
 
 const DocumentManagementPage: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
@@ -30,8 +31,7 @@ const DocumentManagementPage: React.FC = () => {
       try {
         const botData = await botService.getBot(botId);
         setBot(botData);
-      } catch (err) {
-        console.error('Failed to load bot:', err);
+      } catch (err) { log.error('Failed to load bot:', 'DocumentManagementPage', { err });
         setError('Failed to load bot. Please check if you have access to this bot.');
       } finally {
         setIsLoading(false);

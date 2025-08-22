@@ -1,7 +1,7 @@
 /**
  * Authentication service for API calls
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import { 
   AuthToken, 
   LoginCredentials, 
@@ -15,7 +15,9 @@ export class AuthService {
    * Login user with credentials
    */
   async login(credentials: LoginCredentials): Promise<AuthToken> {
-    const response = await apiClient.post<AuthToken>('/auth/login', credentials);
+    const response = await enhancedApiClient.post<AuthToken>('/auth/login', credentials, {
+      context: 'AuthService.login'
+    });
     return response.data;
   }
 
@@ -23,7 +25,7 @@ export class AuthService {
    * Register new user
    */
   async register(data: RegisterData): Promise<User> {
-    const response = await apiClient.post<User>('/auth/register', data);
+    const response = await enhancedApiClient.post<User>('/auth/register', data);
     return response.data;
   }
 
@@ -31,14 +33,14 @@ export class AuthService {
    * Logout user
    */
   async logout(): Promise<void> {
-    await apiClient.post('/auth/logout');
+    await enhancedApiClient.post('/auth/logout');
   }
 
   /**
    * Refresh authentication token
    */
   async refreshToken(refreshToken: string): Promise<AuthToken> {
-    const response = await apiClient.post<AuthToken>('/auth/refresh', {
+    const response = await enhancedApiClient.post<AuthToken>('/auth/refresh', {
       refresh_token: refreshToken,
     });
     return response.data;
@@ -48,7 +50,7 @@ export class AuthService {
    * Get current user profile
    */
   async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<User>('/users/profile');
+    const response = await enhancedApiClient.get<User>('/users/profile');
     return response.data;
   }
 
@@ -56,7 +58,7 @@ export class AuthService {
    * Update user profile
    */
   async updateProfile(profile: Partial<UserProfile>): Promise<User> {
-    const response = await apiClient.put<User>('/users/profile', profile);
+    const response = await enhancedApiClient.put<User>('/users/profile', profile);
     return response.data;
   }
 
@@ -64,14 +66,14 @@ export class AuthService {
    * Request password reset
    */
   async requestPasswordReset(email: string): Promise<void> {
-    await apiClient.post('/auth/forgot-password', { email });
+    await enhancedApiClient.post('/auth/forgot-password', { email });
   }
 
   /**
    * Reset password with token
    */
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    await apiClient.post('/auth/reset-password', {
+    await enhancedApiClient.post('/auth/reset-password', {
       token,
       new_password: newPassword,
     });

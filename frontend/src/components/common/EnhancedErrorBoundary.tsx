@@ -2,9 +2,10 @@
  * Enhanced error boundaries for different application sections
  */
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { logErrorBoundary } from '../../utils/logger';
+import { logErrorBoundary, log } from '../../utils/logger';
 import { ErrorDisplay, FullPageError } from './ErrorDisplay';
 import { Button } from './Button';
+import { getEnvVar } from '../../config/environment';
 
 interface Props {
   children: ReactNode;
@@ -58,7 +59,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, errorInfo);
     
     // Send error to monitoring service in production
-    if (import.meta.env.PROD) {
+    if (getEnvVar.PROD()) {
       this.sendErrorToMonitoring(error, errorInfo);
     }
   }
@@ -137,7 +138,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
           <ErrorDisplay
             error={`${context} Error: ${error.message}`}
             onRetry={canRetry ? this.handleRetry : undefined}
-            showDetails={import.meta.env.DEV}
+            showDetails={getEnvVar.DEV()}
             className="border-0 bg-transparent shadow-none p-0"
           />
           
@@ -153,9 +154,9 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
               </Button>
             )}
             
-            {import.meta.env.DEV && (
+            {getEnvVar.DEV() && (
               <Button
-                onClick={() => console.log('Error Details:', { 
+                onClick={() => log.info('Error Details', 'EnhancedErrorBoundary', { 
                   error: this.state.error, 
                   errorInfo: this.state.errorInfo 
                 })}
@@ -367,7 +368,7 @@ export const useErrorReporting = () => {
     logErrorBoundary(error, { componentStack: context || 'Manual Report' });
     
     // Send to monitoring service
-    if (import.meta.env.PROD) {
+    if (getEnvVar.PROD()) {
       fetch('/api/errors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

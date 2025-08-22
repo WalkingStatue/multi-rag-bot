@@ -3,6 +3,7 @@
  */
 import { ChatMessage, TypingIndicator, ConnectionStatus } from '../types/chat';
 import { connectionHealthMonitor } from '../utils/connectionHealth';
+import { getWsUrl, getApiUrl } from '../config/environment';
 
 export class ChatWebSocketService {
   private socket: WebSocket | null = null;
@@ -65,8 +66,7 @@ export class ChatWebSocketService {
         this.currentSessionId = sessionId || null;
         this.token = token;
         
-        const wsUrl = (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:8000';
-        const chatUrl = `${wsUrl}/api/ws/chat/${botId}?token=${encodeURIComponent(token)}`;
+        const chatUrl = getWsUrl(`/api/ws/chat/${botId}?token=${encodeURIComponent(token)}`);
         
 
         
@@ -100,8 +100,7 @@ export class ChatWebSocketService {
    */
   private async checkBackendHealth(): Promise<void> {
     try {
-      const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
-      const healthResponse = await fetch(`${apiUrl}/health`, {
+      const healthResponse = await fetch(getApiUrl('/health'), {
         method: 'GET',
         signal: AbortSignal.timeout(5000)
       });

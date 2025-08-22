@@ -9,6 +9,7 @@ import { MessageWithStatus } from '../../types/chat';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../common/Button';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { log } from '../../utils/logger';
 
 interface MessageInputProps {
   botId: string;
@@ -71,8 +72,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     const now = Date.now();
     const timeSinceLastMessage = now - lastSentTime;
     if (timeSinceLastMessage < MIN_MESSAGE_INTERVAL) {
-      const waitTime = MIN_MESSAGE_INTERVAL - timeSinceLastMessage;
-      console.log(`Rate limiting: waiting ${Math.ceil(waitTime / 1000)} seconds before sending`);
+      const waitTime = MIN_MESSAGE_INTERVAL - timeSinceLastMessage; log.info(`Rate limiting: waiting ${Math.ceil(waitTime / 1000)} seconds before sending`, 'MessageInput');
       
       // Show user feedback about rate limiting
       const errorMessage: MessageWithStatus = {
@@ -142,16 +142,14 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             // Update the session in the store
             updateSession(sessionId, { title: updatedSession.title });
           }
-        } catch (error) {
-          console.warn('Failed to auto-generate conversation title:', error);
+        } catch (error) { log.warn('Failed to auto-generate conversation title:', 'MessageInput', { error });
         }
       }
 
       // Note: Assistant response will come through WebSocket, so we don't add it here
       // The HTTP response might contain the assistant message, but we ignore it to prevent duplicates
 
-    } catch (error: any) {
-      console.error('Failed to send message:', error);
+    } catch (error: any) { log.error('Failed to send message:', 'MessageInput', { error });
       
       // Update temp message to show error
       updateMessage(sessionId, tempId, {

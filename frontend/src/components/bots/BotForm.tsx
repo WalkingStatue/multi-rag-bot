@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { BotFormData, BotResponse, BotProviderSettings } from '../../types/bot';
 import { botService } from '../../services/botService';
+import { log } from '../../utils/logger';
 
 interface BotFormProps {
   mode: 'create' | 'edit';
@@ -48,7 +49,7 @@ export const BotForm: React.FC<BotFormProps> = ({
         const settings = await botService.getProviderSettings();
         setProviderSettings(settings);
       } catch (error) {
-        console.error('Failed to load provider settings:', error);
+        log.error('Failed to load provider settings', 'BotForm', error);
       } finally {
         setIsLoadingProviders(false);
       }

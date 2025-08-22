@@ -2,6 +2,7 @@
  * Debug component to test scrolling behavior
  */
 import React, { useEffect, useRef } from 'react';
+import { log } from '../../utils/logger';
 
 export const ScrollDebug: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -9,13 +10,9 @@ export const ScrollDebug: React.FC = () => {
   useEffect(() => {
     const logScrollInfo = () => {
       if (containerRef.current) {
-        const container = containerRef.current;
-        console.log('ScrollDebug:', {
-          scrollTop: container.scrollTop,
-          scrollHeight: container.scrollHeight,
-          clientHeight: container.clientHeight,
-          isAtBottom: container.scrollTop + container.clientHeight >= container.scrollHeight - 5
-        });
+        const container = containerRef.current; log.info('ScrollDebug:', 'ScrollDebug', { {
+          scrollTop: container.scrollTop, scrollHeight: container.scrollHeight, clientHeight: container.clientHeight, isAtBottom: container.scrollTop + container.clientHeight >= container.scrollHeight - 5
+        } });
       }
     };
 

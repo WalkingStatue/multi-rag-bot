@@ -1,7 +1,7 @@
 /**
  * Notification service for managing user notifications
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import type { Notification, NotificationSettings } from '../types/notifications';
 
 export class NotificationService {
@@ -13,7 +13,7 @@ export class NotificationService {
     total: number;
     unread_count: number;
   }> {
-    const response = await apiClient.get(`/notifications?limit=${limit}&offset=${offset}`);
+    const response = await enhancedApiClient.get(`/notifications?limit=${limit}&offset=${offset}`);
     return response.data;
   }
 
@@ -21,7 +21,7 @@ export class NotificationService {
    * Get unread notification count
    */
   async getUnreadCount(): Promise<number> {
-    const response = await apiClient.get('/notifications/unread-count');
+    const response = await enhancedApiClient.get('/notifications/unread-count');
     return response.data.count;
   }
 
@@ -29,35 +29,35 @@ export class NotificationService {
    * Mark a notification as read
    */
   async markAsRead(notificationId: string): Promise<void> {
-    await apiClient.put(`/notifications/${notificationId}/read`);
+    await enhancedApiClient.put(`/notifications/${notificationId}/read`);
   }
 
   /**
    * Mark all notifications as read
    */
   async markAllAsRead(): Promise<void> {
-    await apiClient.put('/notifications/mark-all-read');
+    await enhancedApiClient.put('/notifications/mark-all-read');
   }
 
   /**
    * Delete a notification
    */
   async deleteNotification(notificationId: string): Promise<void> {
-    await apiClient.delete(`/notifications/${notificationId}`);
+    await enhancedApiClient.delete(`/notifications/${notificationId}`);
   }
 
   /**
    * Clear all notifications
    */
   async clearAllNotifications(): Promise<void> {
-    await apiClient.delete('/notifications');
+    await enhancedApiClient.delete('/notifications');
   }
 
   /**
    * Get notification settings
    */
   async getNotificationSettings(): Promise<NotificationSettings> {
-    const response = await apiClient.get('/notifications/settings');
+    const response = await enhancedApiClient.get('/notifications/settings');
     return response.data;
   }
 
@@ -65,7 +65,7 @@ export class NotificationService {
    * Update notification settings
    */
   async updateNotificationSettings(settings: Partial<NotificationSettings>): Promise<NotificationSettings> {
-    const response = await apiClient.put('/notifications/settings', settings);
+    const response = await enhancedApiClient.put('/notifications/settings', settings);
     return response.data;
   }
 

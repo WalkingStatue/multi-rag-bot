@@ -2,7 +2,7 @@
  * Document service for handling backend API calls
  */
 
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import {
   DocumentListResponse,
   DocumentDetailResponse,
@@ -60,7 +60,7 @@ class DocumentService {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await apiClient.post(
+    const response = await enhancedApiClient.post(
       `/bots/${botId}/documents/?process_immediately=${processImmediately}`,
       formData,
       {
@@ -85,7 +85,7 @@ class DocumentService {
    * Get list of documents for a bot
    */
   async getDocuments(botId: string, skip: number = 0, limit: number = 100): Promise<DocumentListResponse> {
-    const response = await apiClient.get(`/bots/${botId}/documents/?skip=${skip}&limit=${limit}`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/documents/?skip=${skip}&limit=${limit}`);
     return response.data;
   }
   
@@ -93,7 +93,7 @@ class DocumentService {
    * Get detailed information about a document
    */
   async getDocument(botId: string, documentId: string): Promise<DocumentDetailResponse> {
-    const response = await apiClient.get(`/bots/${botId}/documents/${documentId}`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/documents/${documentId}`);
     return response.data;
   }
   
@@ -101,14 +101,14 @@ class DocumentService {
    * Delete a document
    */
   async deleteDocument(botId: string, documentId: string): Promise<void> {
-    await apiClient.delete(`/bots/${botId}/documents/${documentId}`);
+    await enhancedApiClient.delete(`/bots/${botId}/documents/${documentId}`);
   }
   
   /**
    * Process a document (extract text, chunk, generate embeddings)
    */
   async processDocument(botId: string, documentId: string): Promise<DocumentProcessingResponse> {
-    const response = await apiClient.post(`/bots/${botId}/documents/${documentId}/process`);
+    const response = await enhancedApiClient.post(`/bots/${botId}/documents/${documentId}/process`);
     return response.data;
   }
   
@@ -131,7 +131,7 @@ class DocumentService {
     }
     
     try {
-      const response = await apiClient.get(url);
+      const response = await enhancedApiClient.get(url);
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -148,7 +148,7 @@ class DocumentService {
    */
   async getDocumentChunks(botId: string, documentId: string): Promise<DocumentChunkResponse[]> {
     try {
-      const response = await apiClient.get(`/bots/${botId}/documents/${documentId}/chunks`);
+      const response = await enhancedApiClient.get(`/bots/${botId}/documents/${documentId}/chunks`);
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -163,7 +163,7 @@ class DocumentService {
    */
   async reprocessDocument(botId: string, documentId: string): Promise<DocumentReprocessResponse> {
     try {
-      const response = await apiClient.post(`/bots/${botId}/documents/${documentId}/reprocess`);
+      const response = await enhancedApiClient.post(`/bots/${botId}/documents/${documentId}/reprocess`);
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -179,7 +179,7 @@ class DocumentService {
    * Get document statistics for a bot
    */
   async getDocumentStats(botId: string): Promise<DocumentStatsResponse> {
-    const response = await apiClient.get(`/bots/${botId}/documents/stats`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/documents/stats`);
     return response.data;
   }
   

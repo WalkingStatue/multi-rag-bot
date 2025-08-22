@@ -3,6 +3,7 @@
  */
 import React, { useState } from 'react';
 import { APIKeyCreate, ProviderInfo } from '../../types/api';
+import { log } from '../../utils/logger';
 
 interface APIKeyFormProps {
   onSubmit: (data: APIKeyCreate) => Promise<void>;
@@ -90,14 +91,14 @@ export const APIKeyForm: React.FC<APIKeyFormProps> = ({
           ]);
           
           if (llmModels.status === 'fulfilled') {
-            console.log(`Fetched ${llmModels.value.models.length} LLM models from ${formData.provider} API:`, llmModels.value.models);
+            log.info(`Fetched ${llmModels.value.models.length} LLM models from ${formData.provider} API:`, 'APIKeyForm', { models: llmModels.value.models });
           }
           
           if (embeddingModels.status === 'fulfilled') {
-            console.log(`Fetched ${embeddingModels.value.models.length} embedding models from ${formData.provider} API:`, embeddingModels.value.models);
+            log.info(`Fetched ${embeddingModels.value.models.length} embedding models from ${formData.provider} API:`, 'APIKeyForm', { models: embeddingModels.value.models });
           }
         } catch (error) {
-          console.warn('Failed to fetch dynamic models after validation:', error);
+          log.warn('Failed to fetch dynamic models after validation:', 'APIKeyForm', { error });
         }
       }
     } catch (error) {

@@ -51,6 +51,7 @@ class Bot(Base):
     documents = relationship("Document", back_populates="bot", cascade="all, delete-orphan")
     activity_logs = relationship("ActivityLog", back_populates="bot", cascade="all, delete-orphan")
     collection_metadata = relationship("CollectionMetadata", back_populates="bot", uselist=False, cascade="all, delete-orphan")
+    api_keys = relationship("BotAPIKey", back_populates="bot", cascade="all, delete-orphan")
 
 
 class BotPermission(Base):

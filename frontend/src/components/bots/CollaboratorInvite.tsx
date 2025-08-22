@@ -6,6 +6,7 @@ import { CollaboratorInvite, CollaboratorInviteResponse } from '../../types/bot'
 import { permissionService } from '../../services/permissionService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
+import { log } from '../../utils/logger';
 
 interface CollaboratorInviteProps {
   botId: string;
@@ -77,8 +78,7 @@ export const CollaboratorInviteModal: React.FC<CollaboratorInviteProps> = ({
       setError(null);
       const results = await permissionService.searchUsers(query);
       setSearchResults(results);
-    } catch (error: any) {
-      console.error('Failed to search users:', error);
+    } catch (error: any) { log.error('Failed to search users:', 'CollaboratorInvite', { error });
       setError('Failed to search users. Please try again.');
     } finally {
       setIsSearching(false);
@@ -111,8 +111,7 @@ export const CollaboratorInviteModal: React.FC<CollaboratorInviteProps> = ({
 
       const response = await permissionService.inviteCollaborator(botId, inviteData);
       onInviteSuccess(response);
-    } catch (error: any) {
-      console.error('Failed to invite collaborator:', error);
+    } catch (error: any) { log.error('Failed to invite collaborator:', 'CollaboratorInvite', { error });
       setError(error.response?.data?.detail || 'Failed to invite collaborator. Please try again.');
     } finally {
       setIsInviting(false);

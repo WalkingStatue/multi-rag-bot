@@ -14,6 +14,7 @@ import { CollaboratorInviteModal } from './CollaboratorInvite';
 import { useToastHelpers } from '../common/Toast';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
+import { log } from '../../utils/logger';
 
 interface CollaborationManagementProps {
   botId: string;
@@ -120,8 +121,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       const data = await permissionService.getBotPermissions(botId);
       setCollaborators(data);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load collaborators');
-      console.error('Error loading collaborators:', err);
+      setError(err.response?.data?.detail || 'Failed to load collaborators'); log.error('Error loading collaborators:', 'CollaborationManagement', { err });
     } finally {
       setLoading(prev => ({ ...prev, collaborators: false }));
     }
@@ -135,7 +135,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   //     setPermissionHistory(data);
   //   } catch (err: any) {
   //     setError(err.response?.data?.detail || 'Failed to load permission history');
-  //     console.error('Error loading permission history:', err);
+  // log.error('Error loading permission history:', 'CollaborationManagement', { err });
   //   } finally {
   //     setLoading(prev => ({ ...prev, history: false }));
   //   }
@@ -148,8 +148,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
       const data = await permissionService.getActivityLog(botId);
       setActivityLogs(data);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load activity logs');
-      console.error('Error loading activity logs:', err);
+      setError(err.response?.data?.detail || 'Failed to load activity logs'); log.error('Error loading activity logs:', 'CollaborationManagement', { err });
     } finally {
       setLoading(prev => ({ ...prev, activity: false }));
     }
@@ -194,8 +193,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
     } catch (err: any) {
       const errorMessage = err.response?.data?.detail || 'Failed to update role';
       setError(errorMessage);
-      showErrorToast('Role Update Error', errorMessage);
-      console.error('Error updating role:', err);
+      showErrorToast('Role Update Error', errorMessage); log.error('Error updating role:', 'CollaborationManagement', { err });
     } finally {
       setLoading(prev => ({ ...prev, action: false }));
     }
@@ -218,8 +216,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
     } catch (err: any) {
       const errorMessage = err.response?.data?.detail || 'Failed to remove collaborator';
       setError(errorMessage);
-      showErrorToast('Remove Collaborator Error', errorMessage);
-      console.error('Error removing collaborator:', err);
+      showErrorToast('Remove Collaborator Error', errorMessage); log.error('Error removing collaborator:', 'CollaborationManagement', { err });
     } finally {
       setLoading(prev => ({ ...prev, action: false }));
     }
@@ -235,7 +232,7 @@ export const CollaborationManagement: React.FC<CollaborationManagementProps> = (
   //     onPermissionUpdate?.();
   //   } catch (err: any) {
   //     setError(err.response?.data?.detail || 'Failed to perform bulk update');
-  //     console.error('Error performing bulk update:', err);
+  // log.error('Error performing bulk update:', 'CollaborationManagement', { err });
   //   } finally {
   //     setLoading(prev => ({ ...prev, action: false }));
   //   }

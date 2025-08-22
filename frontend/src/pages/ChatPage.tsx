@@ -12,6 +12,7 @@ import { ChatLayout } from '../layouts';
 import { BotResponse } from '../types/bot';
 import { ConversationSearchResult } from '../types/chat';
 import { DocumentTextIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { log } from '../utils/logger';
 
 export const ChatPage: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
@@ -34,8 +35,7 @@ export const ChatPage: React.FC = () => {
         const botData = await botService.getBot(botId);
         setBot(botData);
         setCurrentBot(botId);
-      } catch (err) {
-        console.error('Failed to load bot:', err);
+      } catch (err) { log.error('Failed to load bot:', 'ChatPage', { err });
         setError('Failed to load bot. Please check if you have access to this bot.');
       } finally {
         setIsLoading(false);

@@ -1,7 +1,7 @@
 /**
  * API Key management service
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import {
   APIKeyResponse,
   APIKeyCreate,
@@ -15,7 +15,7 @@ export class APIKeyService {
    * Get all API keys for the current user
    */
   async getAPIKeys(): Promise<APIKeyResponse[]> {
-    const response = await apiClient.get<APIKeyResponse[]>('/users/api-keys');
+    const response = await enhancedApiClient.get<APIKeyResponse[]>('/users/api-keys');
     return response.data;
   }
 
@@ -23,7 +23,7 @@ export class APIKeyService {
    * Add or update an API key for a provider
    */
   async addAPIKey(apiKeyData: APIKeyCreate): Promise<APIKeyResponse> {
-    const response = await apiClient.post<APIKeyResponse>('/users/api-keys', apiKeyData);
+    const response = await enhancedApiClient.post<APIKeyResponse>('/users/api-keys', apiKeyData);
     return response.data;
   }
 
@@ -31,7 +31,7 @@ export class APIKeyService {
    * Update an existing API key for a provider
    */
   async updateAPIKey(provider: string, apiKeyData: APIKeyUpdate): Promise<APIKeyResponse> {
-    const response = await apiClient.put<APIKeyResponse>(
+    const response = await enhancedApiClient.put<APIKeyResponse>(
       `/users/api-keys/${provider}`,
       apiKeyData
     );
@@ -42,14 +42,14 @@ export class APIKeyService {
    * Delete an API key for a provider
    */
   async deleteAPIKey(provider: string): Promise<void> {
-    await apiClient.delete(`/users/api-keys/${provider}`);
+    await enhancedApiClient.delete(`/users/api-keys/${provider}`);
   }
 
   /**
    * Validate an API key for a provider
    */
   async validateAPIKey(provider: string, apiKey: string): Promise<APIKeyValidationResponse> {
-    const response = await apiClient.post<APIKeyValidationResponse>(
+    const response = await enhancedApiClient.post<APIKeyValidationResponse>(
       `/users/api-keys/${provider}/validate`,
       { provider, api_key: apiKey }
     );
@@ -60,7 +60,7 @@ export class APIKeyService {
    * Get supported providers and their available models (static)
    */
   async getSupportedProviders(): Promise<ProvidersResponse> {
-    const response = await apiClient.get<ProvidersResponse>('/users/api-keys/providers');
+    const response = await enhancedApiClient.get<ProvidersResponse>('/users/api-keys/providers');
     return response.data;
   }
 
@@ -73,7 +73,7 @@ export class APIKeyService {
     total: number;
     source: 'api' | 'static';
   }> {
-    const response = await apiClient.get(`/users/api-keys/providers/${provider}/models`);
+    const response = await enhancedApiClient.get(`/users/api-keys/providers/${provider}/models`);
     return response.data;
   }
 
@@ -84,7 +84,7 @@ export class APIKeyService {
     providers: Record<string, { name: string; models: string[]; requires_api_key: boolean }>;
     total: number;
   }> {
-    const response = await apiClient.get('/users/embedding-providers');
+    const response = await enhancedApiClient.get('/users/embedding-providers');
     return response.data;
   }
 
@@ -97,7 +97,7 @@ export class APIKeyService {
     total: number;
     source: 'api' | 'static';
   }> {
-    const response = await apiClient.get(`/users/embedding-providers/${provider}/models`);
+    const response = await enhancedApiClient.get(`/users/embedding-providers/${provider}/models`);
     return response.data;
   }
 
@@ -109,7 +109,7 @@ export class APIKeyService {
     provider: string;
     message: string;
   }> {
-    const response = await apiClient.post(`/users/embedding-providers/${provider}/validate`, {
+    const response = await enhancedApiClient.post(`/users/embedding-providers/${provider}/validate`, {
       provider,
       api_key: apiKey
     });

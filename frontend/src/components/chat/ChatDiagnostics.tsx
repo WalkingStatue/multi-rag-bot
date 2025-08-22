@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { chatWebSocketService } from '../../services/chatWebSocketService';
 import { useChatStore } from '../../stores/chatStore';
+import { log } from '../../utils/logger';
 
 interface ChatDiagnosticsProps {
   botId: string;
@@ -109,8 +110,7 @@ export const ChatDiagnostics: React.FC<ChatDiagnosticsProps> = ({
       }
 
       setDiagnostics(results);
-    } catch (error) {
-      console.error('Diagnostics failed:', error);
+    } catch (error) { log.error('Diagnostics failed:', 'ChatDiagnostics', { error });
       setDiagnostics({
         error: 'Failed to run diagnostics',
         details: error

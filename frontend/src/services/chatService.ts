@@ -1,7 +1,8 @@
 /**
  * Chat service for handling chat operations with backend API
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
+import { log } from '../utils/logger';
 import {
   ConversationSession,
   ConversationSessionCreate,
@@ -90,7 +91,7 @@ export class ChatService {
    * Create a new conversation session
    */
   async createSession(sessionData: ConversationSessionCreate): Promise<ConversationSession> {
-    const response = await apiClient.post('/conversations/sessions', sessionData);
+    const response = await enhancedApiClient.post('/conversations/sessions', sessionData);
     return response.data;
   }
 
@@ -98,7 +99,7 @@ export class ChatService {
    * Create a session for a specific bot
    */
   async createBotSession(botId: string, title?: string): Promise<ConversationSession> {
-    const response = await apiClient.post(`/conversations/bots/${botId}/sessions`, {
+    const response = await enhancedApiClient.post(`/conversations/bots/${botId}/sessions`, {
       title: title || 'New Conversation'
     });
     return response.data;
@@ -121,7 +122,7 @@ export class ChatService {
       params.append('bot_id', botId);
     }
 
-    const response = await apiClient.get(`/conversations/sessions?${params}`);
+    const response = await enhancedApiClient.get(`/conversations/sessions?${params}`);
     return response.data;
   }
 
@@ -129,7 +130,7 @@ export class ChatService {
    * Get a specific conversation session
    */
   async getSession(sessionId: string): Promise<ConversationSession> {
-    const response = await apiClient.get(`/conversations/sessions/${sessionId}`);
+    const response = await enhancedApiClient.get(`/conversations/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -145,7 +146,7 @@ export class ChatService {
     if (title !== undefined) updateData.title = title;
     if (isShared !== undefined) updateData.is_shared = isShared;
 
-    const response = await apiClient.put(`/conversations/sessions/${sessionId}`, updateData);
+    const response = await enhancedApiClient.put(`/conversations/sessions/${sessionId}`, updateData);
     return response.data;
   }
 
@@ -153,14 +154,14 @@ export class ChatService {
    * Delete a conversation session
    */
   async deleteSession(sessionId: string): Promise<void> {
-    await apiClient.delete(`/conversations/sessions/${sessionId}`);
+    await enhancedApiClient.delete(`/conversations/sessions/${sessionId}`);
   } 
  /**
    * Send a chat message to a bot
    */
   async sendMessage(botId: string, chatRequest: ChatRequest): Promise<ChatResponse> {
     try {
-      const response = await apiClient.post(`/conversations/bots/${botId}/chat`, chatRequest);
+      const response = await enhancedApiClient.post(`/conversations/bots/${botId}/chat`, chatRequest);
       return response.data;
     } catch (error) {
       const chatError = parseApiError(error);
@@ -174,7 +175,7 @@ export class ChatService {
    * Add a message to a session
    */
   async addMessage(messageData: MessageCreate): Promise<Message> {
-    const response = await apiClient.post('/conversations/messages', messageData);
+    const response = await enhancedApiClient.post('/conversations/messages', messageData);
     return response.data;
   }
 
@@ -191,7 +192,7 @@ export class ChatService {
       offset: offset.toString()
     });
 
-    const response = await apiClient.get(`/conversations/sessions/${sessionId}/messages?${params}`);
+    const response = await enhancedApiClient.get(`/conversations/sessions/${sessionId}/messages?${params}`);
     return response.data;
   }
 
@@ -214,7 +215,7 @@ export class ChatService {
       params.append('bot_id', botId);
     }
 
-    const response = await apiClient.get(`/conversations/search?${params}`);
+    const response = await enhancedApiClient.get(`/conversations/search?${params}`);
     return response.data;
   }
 
@@ -233,7 +234,7 @@ export class ChatService {
     if (botId) params.append('bot_id', botId);
     if (sessionId) params.append('session_id', sessionId);
 
-    const response = await apiClient.get(`/conversations/export?${params}`);
+    const response = await enhancedApiClient.get(`/conversations/export?${params}`);
     return response.data;
   }
 
@@ -242,7 +243,7 @@ export class ChatService {
    */
   async getAnalytics(botId?: string): Promise<ConversationAnalytics> {
     const params = botId ? `?bot_id=${botId}` : '';
-    const response = await apiClient.get(`/conversations/analytics${params}`);
+    const response = await enhancedApiClient.get(`/conversations/analytics${params}`);
     return response.data;
   }
 
@@ -250,7 +251,7 @@ export class ChatService {
    * Get available models for all providers
    */
   async getAvailableModels(): Promise<Record<string, string[]>> {
-    const response = await apiClient.get('/bots/models/available');
+    const response = await enhancedApiClient.get('/bots/models/available');
     return response.data;
   }
 
@@ -258,7 +259,7 @@ export class ChatService {
    * Get available models for a specific provider
    */
   async getProviderModels(provider: string): Promise<string[]> {
-    const response = await apiClient.get(`/bots/models/${provider}`);
+    const response = await enhancedApiClient.get(`/bots/models/${provider}`);
     return response.data;
   }
 
@@ -266,7 +267,7 @@ export class ChatService {
    * Get supported providers
    */
   async getSupportedProviders(): Promise<string[]> {
-    const response = await apiClient.get('/bots/providers');
+    const response = await enhancedApiClient.get('/bots/providers');
     return response.data;
   }
 
@@ -274,7 +275,7 @@ export class ChatService {
    * Get available embedding models for all providers
    */
   async getAvailableEmbeddingModels(): Promise<Record<string, string[]>> {
-    const response = await apiClient.get('/bots/embeddings/available');
+    const response = await enhancedApiClient.get('/bots/embeddings/available');
     return response.data;
   }
 
@@ -282,7 +283,7 @@ export class ChatService {
    * Get available embedding models for a specific provider
    */
   async getProviderEmbeddingModels(provider: string): Promise<string[]> {
-    const response = await apiClient.get(`/bots/embeddings/${provider}`);
+    const response = await enhancedApiClient.get(`/bots/embeddings/${provider}`);
     return response.data;
   }
 
@@ -290,7 +291,7 @@ export class ChatService {
    * Get supported embedding providers
    */
   async getSupportedEmbeddingProviders(): Promise<string[]> {
-    const response = await apiClient.get('/bots/embeddings/providers');
+    const response = await enhancedApiClient.get('/bots/embeddings/providers');
     return response.data;
   }
 
@@ -344,8 +345,7 @@ export class ChatService {
       }
       
       return null;
-    } catch (error) {
-      console.warn('Failed to auto-update session title:', error);
+    } catch (error) { log.warn('Failed to auto-update session title:', 'chatService', { error });
       return null;
     }
   }

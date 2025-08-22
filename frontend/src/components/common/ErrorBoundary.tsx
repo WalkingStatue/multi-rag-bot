@@ -2,6 +2,7 @@
  * Error boundary component to catch and display errors gracefully
  */
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { log } from '../../utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -23,8 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error boundary caught an error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) { log.error('Error boundary caught an error:', 'ErrorBoundary', { error, errorInfo });
   }
 
   render() {

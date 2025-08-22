@@ -118,4 +118,40 @@ class APIClient {
   }
 }
 
+// Export singleton instance with deprecation warning
 export const apiClient = new APIClient();
+
+// Add deprecation warning in development
+if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+  const originalGet = apiClient.get;
+  const originalPost = apiClient.post;
+  const originalPut = apiClient.put;
+  const originalDelete = apiClient.delete;
+  
+  const deprecationWarning = (method: string) => {
+    console.warn(
+      `⚠️  DEPRECATED: apiClient.${method}() is deprecated. ` +
+      'Please use enhancedApiClient from "./enhancedApi" instead for better error handling, retry logic, and monitoring.'
+    );
+  };
+  
+  apiClient.get = function(...args) {
+    deprecationWarning('get');
+    return originalGet.apply(this, args);
+  };
+  
+  apiClient.post = function(...args) {
+    deprecationWarning('post');
+    return originalPost.apply(this, args);
+  };
+  
+  apiClient.put = function(...args) {
+    deprecationWarning('put');
+    return originalPut.apply(this, args);
+  };
+  
+  apiClient.delete = function(...args) {
+    deprecationWarning('delete');
+    return originalDelete.apply(this, args);
+  };
+}

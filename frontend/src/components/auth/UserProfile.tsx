@@ -7,12 +7,13 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Alert } from '../common/Alert';
 import { validateField, authValidationRules } from '../../utils/validators';
+import { log } from '../../utils/logger';
 
 export const UserProfile: React.FC = () => {
   const { user, updateProfile, isLoading, error, clearError } = useAuth();
   
   // Debug logging
-  console.log('UserProfile render:', { user, isLoading, error, hasUser: !!user });
+  log.debug('UserProfile render', 'UserProfile', { user, isLoading, error, hasUser: !!user });
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -194,7 +195,7 @@ export const UserProfile: React.FC = () => {
                         const form = new FormData();
                         form.append('file', file);
                         const token = localStorage.getItem('access_token');
-                        const base = (import.meta as any).env.VITE_API_URL || '';
+                        const base = getEnvVar.get('VITE_API_URL', '') || '';
                         const url = `${base.replace(/\/$/, '')}/api/users/avatar`;
                         const res = await fetch(url, {
                           method: 'POST',

@@ -3,18 +3,12 @@
  */
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { log } from '../../utils/logger';
 
 export const UserProfileDebug: React.FC = () => {
-  const { user, isAuthenticated, isLoading, error } = useAuth();
-
-  console.log('UserProfileDebug render:', {
-    user,
-    isAuthenticated,
-    isLoading,
-    error,
-    hasUser: !!user,
-    userKeys: user ? Object.keys(user) : null
-  });
+  const { user, isAuthenticated, isLoading, error } = useAuth(); log.info('UserProfileDebug render:', 'UserProfileDebug', { {
+    user, isAuthenticated, isLoading, error, hasUser: !!user, userKeys: user ? Object.keys(user) : null
+  } });
 
   return (
     <div className="max-w-2xl mx-auto p-6">

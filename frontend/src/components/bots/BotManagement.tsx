@@ -8,6 +8,7 @@ import { BotForm } from './BotForm';
 import { BotTransferModal } from './BotTransferModal';
 import { BotWithRole, BotFormData, BotListFilters, BotTransferRequest } from '../../types/bot';
 import { botService } from '../../services/botService';
+import { log } from '../../utils/logger';
 
 type ViewMode = 'list' | 'create' | 'edit';
 
@@ -63,8 +64,7 @@ export const BotManagement: React.FC = () => {
       setIsLoading(true);
       const userBots = await botService.getUserBots();
       setBots(userBots);
-    } catch (error: any) {
-      console.error('Failed to load bots:', error);
+    } catch (error: any) { log.error('Failed to load bots:', 'BotManagement', { error });
       setMessage({
         type: 'error',
         text: error.response?.data?.detail || 'Failed to load bots',
@@ -90,8 +90,7 @@ export const BotManagement: React.FC = () => {
         text: 'Bot deleted successfully',
       });
       await loadBots(); // Reload the list
-    } catch (error: any) {
-      console.error('Failed to delete bot:', error);
+    } catch (error: any) { log.error('Failed to delete bot:', 'BotManagement', { error });
       setMessage({
         type: 'error',
         text: error.response?.data?.detail || 'Failed to delete bot',
@@ -118,8 +117,7 @@ export const BotManagement: React.FC = () => {
       navigate('/bots');
       setEditingBot(null);
       await loadBots(); // Reload the list
-    } catch (error: any) {
-      console.error('Failed to save bot:', error);
+    } catch (error: any) { log.error('Failed to save bot:', 'BotManagement', { error });
       
       // Handle validation errors (422)
       let errorMessage = `Failed to ${viewMode === 'create' ? 'create' : 'update'} bot`;
@@ -167,8 +165,7 @@ export const BotManagement: React.FC = () => {
       });
       setTransferBot(null);
       await loadBots(); // Reload the list
-    } catch (error: any) {
-      console.error('Failed to transfer ownership:', error);
+    } catch (error: any) { log.error('Failed to transfer ownership:', 'BotManagement', { error });
       throw error; // Re-throw to let the modal handle the error display
     }
   };

@@ -12,6 +12,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { ErrorBoundary, ChatErrorFallback } from '../common/ErrorBoundary';
 
 import { BotResponse } from '../../types/bot';
+import { log } from '../../utils/logger';
 
 interface ChatWindowProps {
   bot: BotResponse;
@@ -52,8 +53,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
   // Set up WebSocket event listeners
   useEffect(() => {
     if (!bot.id) return;
-
-    console.log('ChatWindow: Setting up WebSocket event listeners for bot:', bot.id);
+    log.info('ChatWindow: Setting up WebSocket event listeners for bot:', 'ChatWindow', { bot_id: bot.id });
 
     const unsubscribeChat = chatWebSocketService.onChatMessage((message) => {
       // Handle incoming chat messages
@@ -99,7 +99,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ bot, className = '' }) =
         try {
           cleanup();
         } catch (error) {
-          console.error('Error during cleanup:', error);
+          log.error('Error during cleanup:', 'ChatWindow', { error });
         }
       });
       cleanupFunctions.current = [];

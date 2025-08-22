@@ -34,6 +34,7 @@ class User(Base):
     messages = relationship("Message", back_populates="user", cascade="all, delete-orphan")
     uploaded_documents = relationship("Document", back_populates="uploaded_by_user")
     activity_logs = relationship("ActivityLog", back_populates="user")
+    created_bot_api_keys = relationship("BotAPIKey", back_populates="created_by_user")
 
 
 class UserAPIKey(Base):

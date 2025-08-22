@@ -328,13 +328,69 @@ export const getWsUrl = (path: string = ''): string => {
   return cleanPath ? `${baseUrl}/${cleanPath}` : baseUrl;
 };
 
+// Typed environment helpers
+export const getEnvVar = {
+  // Core environment variables
+  NODE_ENV: (): string => import.meta.env.NODE_ENV || 'development',
+  MODE: (): string => import.meta.env.MODE || 'development',
+  PROD: (): boolean => import.meta.env.PROD || false,
+  DEV: (): boolean => import.meta.env.DEV || true,
+  
+  // API Configuration
+  VITE_API_URL: (): string => import.meta.env.VITE_API_URL || '',
+  VITE_WS_URL: (): string => import.meta.env.VITE_WS_URL || '',
+  VITE_LOG_ENDPOINT: (): string => import.meta.env.VITE_LOG_ENDPOINT || '',
+  
+  // App Configuration  
+  VITE_APP_NAME: (): string => import.meta.env.VITE_APP_NAME || '',
+  VITE_APP_VERSION: (): string => import.meta.env.VITE_APP_VERSION || '',
+  
+  // Feature Flags
+  VITE_ENABLE_ANALYTICS: (): boolean => import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
+  VITE_ENABLE_DEBUG: (): boolean => import.meta.env.VITE_ENABLE_DEBUG === 'true',
+  VITE_ENABLE_OFFLINE: (): boolean => import.meta.env.VITE_ENABLE_OFFLINE === 'true',
+  VITE_ENABLE_PUSH: (): boolean => import.meta.env.VITE_ENABLE_PUSH === 'true',
+  VITE_ENABLE_EXPERIMENTAL: (): boolean => import.meta.env.VITE_ENABLE_EXPERIMENTAL === 'true',
+  
+  // Development flags
+  VITE_ENABLE_MOCK_DATA: (): boolean => import.meta.env.VITE_ENABLE_MOCK_DATA === 'true',
+  VITE_ENABLE_PERFORMANCE_MONITORING: (): boolean => import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true',
+  VITE_ENABLE_SERVICE_WORKER: (): boolean => import.meta.env.VITE_ENABLE_SERVICE_WORKER === 'true',
+  
+  // Custom getter for any environment variable with optional default
+  get: <T = string>(key: string, defaultValue?: T): T | string => {
+    const value = (import.meta.env as any)[key];
+    return value !== undefined ? value : (defaultValue ?? '');
+  },
+  
+  // Type-safe boolean getter
+  getBoolean: (key: string, defaultValue: boolean = false): boolean => {
+    const value = (import.meta.env as any)[key];
+    if (value === undefined) return defaultValue;
+    return value === 'true' || value === '1' || value === true;
+  },
+  
+  // Type-safe number getter
+  getNumber: (key: string, defaultValue: number = 0): number => {
+    const value = (import.meta.env as any)[key];
+    if (value === undefined) return defaultValue;
+    const parsed = Number(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+  }
+};
+
+// Backwards compatibility exports
+export const env = getEnvVar;
+export const getEnvironmentVariable = getEnvVar.get;
+export const isEnvironment = (envName: string): boolean => getEnvVar.MODE() === envName;
+
 // Debug utilities
 export const logConfig = (): void => {
   if (config.features.enableDebugMode) {
     console.group('🔧 Application Configuration');
-    console.log('Environment:', getEnvironment());
-    console.log('Config:', config);
-    console.log('Validation errors:', validateConfig(config));
+    console.info('Environment:', getEnvironment());
+    console.info('Config:', config);
+    console.info('Validation errors:', validateConfig(config));
     console.groupEnd();
   }
 };

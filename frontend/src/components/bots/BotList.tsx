@@ -8,6 +8,7 @@ import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { Modal } from '../common/Modal';
 import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon, ComputerDesktopIcon, ChatBubbleLeftRightIcon, DocumentTextIcon, PencilIcon, UserGroupIcon, ArrowsRightLeftIcon, TrashIcon, XMarkIcon, ExclamationTriangleIcon, EllipsisVerticalIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { log } from '../../utils/logger';
 
 interface BotListProps {
   bots: BotWithRole[];
@@ -72,8 +73,7 @@ export const BotList: React.FC<BotListProps> = ({
       try {
         const info = await botService.getBotDeleteInfo(botId);
         setDeleteInfo(info);
-      } catch (error) {
-        console.error('Failed to load delete info:', error);
+      } catch (error) { log.error('Failed to load delete info:', 'BotList', { error });
         // Still allow deletion even if we can't load the info
         setDeleteInfo({
           bot_id: botId,

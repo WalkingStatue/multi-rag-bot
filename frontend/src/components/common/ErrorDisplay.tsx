@@ -4,6 +4,7 @@
 import React from 'react';
 import { AppError, formatErrorMessage } from '../../utils/errorHandler';
 import { Button } from './Button';
+import { getEnvVar } from '../../config/environment';
 
 interface ErrorDisplayProps {
   error: AppError | string;
@@ -164,7 +165,7 @@ export const FullPageError: React.FC<{
         <ErrorDisplay
           error={errorObj}
           onRetry={onRetry}
-          showDetails={import.meta.env.DEV}
+          showDetails={getEnvVar.DEV()}
           className="text-center"
         />
         

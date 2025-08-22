@@ -7,6 +7,7 @@ import { BotPermission, BulkPermissionUpdate } from '../../types/bot';
 import { permissionService } from '../../services/permissionService';
 import { Button } from '../common/Button';
 import { useToastHelpers } from '../common/Toast';
+import { log } from '../../utils/logger';
 
 interface BulkPermissionManagerProps {
   botId: string;
@@ -157,8 +158,7 @@ export const BulkPermissionManager: React.FC<BulkPermissionManagerProps> = ({
     } catch (err: any) {
       const errorMessage = err.response?.data?.detail || 'Failed to perform bulk update';
       setError(errorMessage);
-      showErrorToast('Bulk Update Error', errorMessage);
-      console.error('Error performing bulk update:', err);
+      showErrorToast('Bulk Update Error', errorMessage); log.error('Error performing bulk update:', 'BulkPermissionManager', { err });
     } finally {
       setLoading(false);
     }

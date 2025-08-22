@@ -1,7 +1,7 @@
 /**
  * Permission management service for collaboration features
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import {
   BotPermission,
   CollaboratorInvite,
@@ -17,7 +17,7 @@ export class PermissionService {
    */
   async getBotPermissions(botId: string): Promise<BotPermission[]> {
     try {
-      const response = await apiClient.get(`/bots/${botId}/permissions`);
+      const response = await enhancedApiClient.get(`/bots/${botId}/permissions`);
       return response.data;
     } catch (error: any) {
       throw error;
@@ -31,7 +31,7 @@ export class PermissionService {
     botId: string,
     invite: CollaboratorInvite
   ): Promise<CollaboratorInviteResponse> {
-    const response = await apiClient.post(`/bots/${botId}/permissions/invite`, invite);
+    const response = await enhancedApiClient.post(`/bots/${botId}/permissions/invite`, invite);
     return response.data;
   }
 
@@ -43,7 +43,7 @@ export class PermissionService {
     userId: string,
     role: 'admin' | 'editor' | 'viewer'
   ): Promise<BotPermission> {
-    const response = await apiClient.put(`/bots/${botId}/permissions/${userId}`, { role });
+    const response = await enhancedApiClient.put(`/bots/${botId}/permissions/${userId}`, { role });
     return response.data;
   }
 
@@ -51,7 +51,7 @@ export class PermissionService {
    * Remove a collaborator from a bot
    */
   async removeCollaborator(botId: string, userId: string): Promise<void> {
-    await apiClient.delete(`/bots/${botId}/permissions/${userId}`);
+    await enhancedApiClient.delete(`/bots/${botId}/permissions/${userId}`);
   }
 
   /**
@@ -61,7 +61,7 @@ export class PermissionService {
     botId: string,
     updates: BulkPermissionUpdate
   ): Promise<BotPermission[]> {
-    const response = await apiClient.post(`/bots/${botId}/permissions/bulk`, updates);
+    const response = await enhancedApiClient.post(`/bots/${botId}/permissions/bulk`, updates);
     return response.data;
   }
 
@@ -69,7 +69,7 @@ export class PermissionService {
    * Get permission history for a bot
    */
   async getPermissionHistory(botId: string): Promise<PermissionHistory[]> {
-    const response = await apiClient.get(`/bots/${botId}/permissions/history`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/permissions/history`);
     return response.data;
   }
 
@@ -77,7 +77,7 @@ export class PermissionService {
    * Get activity log for a bot
    */
   async getActivityLog(botId: string): Promise<ActivityLog[]> {
-    const response = await apiClient.get(`/bots/${botId}/activity`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/activity`);
     const data = response.data as any;
     if (Array.isArray(data)) {
       return data as ActivityLog[];
@@ -95,7 +95,7 @@ export class PermissionService {
    * Search for users to invite as collaborators
    */
   async searchUsers(query: string): Promise<Array<{ id: string; username: string; email: string; full_name?: string }>> {
-    const response = await apiClient.get(`/users/search?q=${encodeURIComponent(query)}`);
+    const response = await enhancedApiClient.get(`/users/search?q=${encodeURIComponent(query)}`);
     return response.data;
   }
 
@@ -104,7 +104,7 @@ export class PermissionService {
    */
   async getUserBotRole(botId: string): Promise<string | null> {
     try {
-      const response = await apiClient.get(`/bots/${botId}/permissions/my-role`);
+      const response = await enhancedApiClient.get(`/bots/${botId}/permissions/my-role`);
       return response.data.role;
     } catch (error: any) {
       return null;

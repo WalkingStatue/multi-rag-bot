@@ -1,232 +1,128 @@
 /**
- * WebSocket service for real-time updates
+ * Unified WebSocket service factory
+ * This provides access to different WebSocket adapters from a single entry point
  */
+import { chatWebSocketAdapter } from './adapters/ChatWebSocketAdapter';
+import { notificationsWebSocketAdapter } from './adapters/NotificationsWebSocketAdapter';
+import { WebSocketState } from './core/WebSocketCore';
 
-
+/**
+ * Unified WebSocket Service
+ * Provides access to all WebSocket functionality through adapters
+ */
 export class WebSocketService {
-  private socket: WebSocket | null = null;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000;
-  private listeners: Map<string, Set<(data: any) => void>> = new Map();
-  private token: string | null = null;
-  private pingInterval: number | null = null;
+  // Expose adapters as public properties
+  public readonly chat = chatWebSocketAdapter;
+  public readonly notifications = notificationsWebSocketAdapter;
 
   /**
-   * Connect to WebSocket server
+   * Initialize all WebSocket connections with authentication token
    */
-  connect(token: string): void {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      return;
+  async initialize(token: string): Promise<void> {
+    try {
+      // Connect to notifications WebSocket
+      await this.notifications.connect(token);
+      
+      // Note: Chat WebSocket is connected on-demand when needed for a specific bot
+      // This is handled in ChatWebSocketAdapter.connectToBot()
+      
+    } catch (error) {
+      throw new Error(`Failed to initialize WebSocket services: ${error}`);
     }
-
-    this.token = token;
-    const wsUrl = (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:8000';
-    const notificationsUrl = `${wsUrl}/api/ws/notifications?token=${encodeURIComponent(token)}`;
-    
-    this.socket = new WebSocket(notificationsUrl);
-    this.setupEventHandlers();
   }
 
   /**
-   * Disconnect from WebSocket server
+   * Connect to chat WebSocket for a specific bot
+   */
+  async connectToChat(botId: string, token: string, sessionId?: string): Promise<void> {
+    return this.chat.connectToBot(botId, token, sessionId);
+  }
+
+  /**
+   * Disconnect all WebSocket connections
    */
   disconnect(): void {
-    if (this.pingInterval) {
-      clearInterval(this.pingInterval);
-      this.pingInterval = null;
-    }
-    
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
-    }
-    this.listeners.clear();
-    this.reconnectAttempts = 0;
-    this.token = null;
+    this.chat.disconnect();
+    this.notifications.disconnect();
   }
 
   /**
-   * Subscribe to specific event types
+   * Clean disconnect that clears all listeners
    */
-  subscribe(eventType: string, callback: (data: any) => void): () => void {
-    if (!this.listeners.has(eventType)) {
-      this.listeners.set(eventType, new Set());
-    }
-    
-    this.listeners.get(eventType)!.add(callback);
-
-    // Return unsubscribe function
-    return () => {
-      const eventListeners = this.listeners.get(eventType);
-      if (eventListeners) {
-        eventListeners.delete(callback);
-        if (eventListeners.size === 0) {
-          this.listeners.delete(eventType);
-        }
-      }
-    };
+  cleanDisconnect(): void {
+    this.chat.cleanDisconnect();
+    this.notifications.disconnect();
   }
 
   /**
-   * Send a message through WebSocket
-   */
-  send(data: any): void {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(data));
-    }
-  }
-
-  /**
-   * Check if WebSocket is connected
+   * Check if any WebSocket connections are active
    */
   isConnected(): boolean {
-    return this.socket?.readyState === WebSocket.OPEN || false;
+    return this.chat.isConnected() || this.notifications.isConnected();
   }
 
   /**
-   * Setup event handlers for WebSocket
+   * Get overall connection status
    */
-  private setupEventHandlers(): void {
-    if (!this.socket) return;
-
-    this.socket.onopen = () => {
-      this.reconnectAttempts = 0;
-      this.notifyListeners('connection', { status: 'connected' });
-      this.startPingInterval();
-    };
-
-    this.socket.onclose = (event) => {
-      this.notifyListeners('connection', { 
-        status: 'disconnected', 
-        code: event.code, 
-        reason: event.reason 
-      });
-      
-      if (this.pingInterval) {
-        clearInterval(this.pingInterval);
-        this.pingInterval = null;
-      }
-      
-      // Don't reconnect if it was a clean close or authentication error
-      if (event.code !== 1000 && event.code !== 4001) {
-        this.handleReconnect();
-      }
-    };
-
-    this.socket.onerror = () => {
-      this.notifyListeners('connection', { status: 'error', error: 'Connection error' });
-    };
-
-    this.socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        this.handleMessage(message);
-      } catch (error) {
-        // Error parsing WebSocket message
-      }
+  getStatus() {
+    return {
+      chat: {
+        connected: this.chat.isConnected(),
+        state: this.chat.getState(),
+        botId: this.chat.getCurrentBotId(),
+        sessionId: this.chat.getCurrentSessionId(),
+        stats: this.chat.getStats(),
+      },
+      notifications: {
+        connected: this.notifications.isConnected(),
+        state: this.notifications.getState(),
+        stats: this.notifications.getStats(),
+      },
     };
   }
 
   /**
-   * Handle incoming WebSocket messages
+   * Cleanup all resources
    */
-  private handleMessage(message: any): void {
-    const { type, data } = message;
-
-    switch (type) {
-      case 'connection_established':
-        break;
-      
-      case 'notification':
-        this.notifyListeners('notification', data);
-        break;
-      
-      case 'permission_change':
-        this.notifyListeners('permission_update', data);
-        break;
-      
-      case 'bot_update':
-        this.notifyListeners('bot_update', data);
-        break;
-      
-      case 'document_update':
-        this.notifyListeners('collaboration_update', data);
-        break;
-      
-      case 'chat_response':
-        // Handle chat responses from the bot
-        this.notifyListeners('chat_message', data);
-        break;
-      
-      case 'chat_message':
-        // Handle chat messages (user messages from other collaborators)
-        this.notifyListeners('chat_message', data);
-        break;
-      
-      case 'pong':
-        // Handle pong response for ping/pong health check
-        break;
-      
-      case 'error':
-        break;
-      
-      default:
-    }
-  }
-
-  /**
-   * Start ping interval for connection health
-   */
-  private startPingInterval(): void {
-    this.pingInterval = setInterval(() => {
-      if (this.isConnected()) {
-        this.send({
-          type: 'ping',
-          timestamp: new Date().toISOString()
-        });
-      }
-    }, 30000); // Ping every 30 seconds
-  }
-
-  /**
-   * Handle reconnection logic
-   */
-  private handleReconnect(): void {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts || !this.token) {
-      this.notifyListeners('connection', { 
-        status: 'failed', 
-        message: 'Failed to reconnect after maximum attempts' 
-      });
-      return;
-    }
-
-    this.reconnectAttempts++;
-    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
-    setTimeout(() => {
-      if (this.token) {
-        this.connect(this.token);
-      }
-    }, delay);
-  }
-
-  /**
-   * Notify all listeners for a specific event type
-   */
-  private notifyListeners(eventType: string, data: any): void {
-    const eventListeners = this.listeners.get(eventType);
-    if (eventListeners) {
-      eventListeners.forEach(callback => {
-        try {
-          callback(data);
-        } catch (error) {
-          // Error in WebSocket listener
-        }
-      });
-    }
+  destroy(): void {
+    this.chat.destroy();
+    this.notifications.destroy();
   }
 }
 
 // Export singleton instance
-export const websocketService = new WebSocketService();
+export const webSocketService = new WebSocketService();
+
+// Export types and utilities
+export { WebSocketState } from './core/WebSocketCore';
+export type { 
+  NotificationData, 
+  BotUpdateData, 
+  PermissionUpdateData, 
+  CollaborationUpdateData 
+} from './adapters/NotificationsWebSocketAdapter';
+
+// Backward compatibility exports - these maintain the same interface as the old services
+export const websocketService = {
+  connect: (token: string) => webSocketService.notifications.connect(token),
+  disconnect: () => webSocketService.notifications.disconnect(),
+  subscribe: (eventType: string, callback: (data: any) => void) => 
+    webSocketService.notifications.subscribe(eventType, callback),
+  send: (data: any) => webSocketService.notifications.send(data),
+  isConnected: () => webSocketService.notifications.isConnected(),
+};
+
+export const chatWebSocketService = {
+  connectToBot: (botId: string, token: string, sessionId?: string) => 
+    webSocketService.chat.connectToBot(botId, token, sessionId),
+  syncToSession: (sessionId: string) => webSocketService.chat.syncToSession(sessionId),
+  disconnect: () => webSocketService.chat.disconnect(),
+  cleanDisconnect: () => webSocketService.chat.cleanDisconnect(),
+  onChatMessage: (callback: any) => webSocketService.chat.onChatMessage(callback),
+  onTypingIndicator: (callback: any) => webSocketService.chat.onTypingIndicator(callback),
+  onConnectionStatus: (callback: any) => webSocketService.chat.onConnectionStatus(callback),
+  sendTypingIndicator: (isTyping: boolean) => webSocketService.chat.sendTypingIndicator(isTyping),
+  isConnected: () => webSocketService.chat.isConnected(),
+  getCurrentBotId: () => webSocketService.chat.getCurrentBotId(),
+  getCurrentSessionId: () => webSocketService.chat.getCurrentSessionId(),
+};

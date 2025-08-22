@@ -1,6 +1,7 @@
 /**
  * Comprehensive logging system with different levels and contexts
  */
+import { getEnvVar } from '../config/environment';
 
 export enum LogLevel {
   DEBUG = 0,
@@ -43,14 +44,14 @@ class Logger {
   private constructor() {
     this.sessionId = this.generateSessionId();
     this.config = {
-      level: import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.INFO,
+      level: getEnvVar.DEV() ? LogLevel.DEBUG : LogLevel.INFO,
       enableConsole: true,
-      enableRemote: import.meta.env.PROD,
+      enableRemote: getEnvVar.PROD(),
       enableStorage: true,
       maxStorageEntries: 1000,
-      remoteEndpoint: import.meta.env.VITE_LOG_ENDPOINT,
+      remoteEndpoint: getEnvVar.get('VITE_LOG_ENDPOINT', ''),
       contextFilters: [],
-      enableStackTrace: import.meta.env.DEV,
+      enableStackTrace: getEnvVar.DEV(),
     };
 
     // Load stored logs on initialization

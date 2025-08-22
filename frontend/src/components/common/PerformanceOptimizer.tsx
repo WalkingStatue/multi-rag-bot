@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { performanceMonitor } from '../../utils/performance';
 import { useBundlePerformance, useMemoryTracking } from '../../hooks/usePerformance';
 import { logger } from '../../utils/logger';
+import { getEnvVar } from '../../config/environment';
 
 interface PerformanceOptimizerProps {
   children: React.ReactNode;
@@ -222,7 +223,7 @@ export const PerformanceMetrics: React.FC = () => {
 
   useEffect(() => {
     // Only show in development
-    if (import.meta.env.MODE !== 'development') {
+    if (getEnvVar.MODE() !== 'development') {
       return;
     }
 
@@ -234,7 +235,7 @@ export const PerformanceMetrics: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (import.meta.env.MODE !== 'development' || !isVisible) {
+  if (getEnvVar.MODE() !== 'development' || !isVisible) {
     return (
       <button
         onClick={() => setIsVisible(true)}

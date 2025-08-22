@@ -15,6 +15,7 @@ import { useToastHelpers } from '../components/common/Toast';
 
 import { MainLayout } from '../layouts';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { log } from '../utils/logger';
 
 interface CollaborationPageProps {
   botId?: string;
@@ -67,12 +68,10 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
         try {
           const collaboratorsData = await permissionService.getBotPermissions(botId);
           setCollaborators(collaboratorsData);
-        } catch (err) {
-          console.warn('Could not load collaborators:', err);
+        } catch (err) { log.warn('Could not load collaborators:', 'CollaborationPage', { err });
         }
       }
-    } catch (err: any) {
-      console.error('Failed to load bot data:', err);
+    } catch (err: any) { log.error('Failed to load bot data:', 'CollaborationPage', { err });
       const errorMessage = err.response?.data?.detail || 'Failed to load bot data';
       setError(errorMessage);
       showErrorToast('Error Loading Bot', errorMessage);
@@ -89,8 +88,7 @@ export const CollaborationPage: React.FC<CollaborationPageProps> = ({ botId: pro
   };
 
   const handleNotificationClick = (notification: any) => {
-    // Handle notification clicks - could navigate to specific sections
-    console.log('Notification clicked:', notification);
+    // Handle notification clicks - could navigate to specific sections log.info('Notification clicked:', 'CollaborationPage', { notification });
   };
 
   const canManageCollaborators = ['owner', 'admin'].includes(currentUserRole);

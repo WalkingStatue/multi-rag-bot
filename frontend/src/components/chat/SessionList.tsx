@@ -7,6 +7,7 @@ import { chatService } from '../../services/chatService';
 import { BotResponse } from '../../types/bot';
 import { ConversationSession } from '../../types/chat';
 import { formatDistanceToNow } from 'date-fns';
+import { log } from '../../utils/logger';
 
 interface SessionListProps {
   bot: BotResponse;
@@ -43,8 +44,7 @@ export const SessionList: React.FC<SessionListProps> = ({
       addSession(newSession);
       setCurrentSession(newSession.id);
       setMessages(newSession.id, []); // Initialize empty messages
-    } catch (error) {
-      console.error('Failed to create session:', error);
+    } catch (error) { log.error('Failed to create session:', 'SessionList', { error });
     } finally {
       setIsCreating(false);
     }
@@ -68,8 +68,7 @@ export const SessionList: React.FC<SessionListProps> = ({
       updateSession(sessionId, { title: updatedSession.title });
       setEditingSessionId(null);
       setEditTitle('');
-    } catch (error) {
-      console.error('Failed to update session title:', error);
+    } catch (error) { log.error('Failed to update session title:', 'SessionList', { error });
     }
   };
 
@@ -81,8 +80,7 @@ export const SessionList: React.FC<SessionListProps> = ({
     try {
       await chatService.deleteSession(sessionId);
       removeSession(sessionId);
-    } catch (error) {
-      console.error('Failed to delete session:', error);
+    } catch (error) { log.error('Failed to delete session:', 'SessionList', { error });
     }
   };
 

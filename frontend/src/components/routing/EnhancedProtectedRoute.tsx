@@ -7,6 +7,7 @@ import { useEnhancedAuth, usePermissions } from '../../hooks/useEnhancedAuth';
 import { LoadingOverlay, LoadingSpinner } from '../common/LoadingSpinner';
 import { ErrorDisplay } from '../common/ErrorDisplay';
 import { log } from '../../utils/logger';
+import { getEnvVar } from '../../config/environment';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -80,7 +81,7 @@ export const EnhancedProtectedRoute: React.FC<ProtectedRouteProps> = ({
         <ErrorDisplay
           error={error}
           onRetry={() => window.location.reload()}
-          showDetails={import.meta.env.DEV}
+          showDetails={getEnvVar.DEV()}
         />
       </div>
     );
@@ -274,7 +275,7 @@ export const DataRoute: React.FC<DataRouteProps> = ({
           <ErrorDisplay
             error={error}
             onRetry={onRetry}
-            showDetails={import.meta.env.DEV}
+            showDetails={getEnvVar.DEV()}
           />
         </div>
       ) : !data && emptyState ? (

@@ -11,6 +11,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { botService } from '../services/botService';
 import { BotWithRole } from '../types/bot';
+import { log } from '../utils/logger';
 import {
   DocumentDuplicateIcon,
   CodeBracketIcon,
@@ -106,8 +107,7 @@ const InteractiveWidgetPreview: React.FC<InteractiveWidgetPreviewProps> = ({ con
       // This simulates what happens when a real user opens the widget
       const sessionId = `preview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setConversationId(sessionId);
-    } catch (error) {
-      console.error('Failed to initialize preview session:', error);
+    } catch (error) { log.error('Failed to initialize preview session:', 'BotIntegrationsPage', { error });
       setSessionError('Failed to connect to bot. Preview will show simulated responses.');
     }
   };
@@ -164,8 +164,7 @@ const InteractiveWidgetPreview: React.FC<InteractiveWidgetPreviewProps> = ({ con
       } else {
         throw new Error(data.error || 'Failed to get bot response');
       }
-    } catch (error) {
-      console.error('Error sending message to bot:', error);
+    } catch (error) { log.error('Error sending message to bot:', 'BotIntegrationsPage', { error });
       
       // Fallback to simulated response if API fails
       const fallbackResponses = [
@@ -442,8 +441,7 @@ export const BotIntegrationsPage: React.FC = () => {
         ...prev,
         title: foundBot.bot.name + ' Assistant'
       }));
-    } catch (err) {
-      console.error('Failed to load bot:', err);
+    } catch (err) { log.error('Failed to load bot:', 'BotIntegrationsPage', { err });
       setError('Failed to load bot information.');
     } finally {
       setIsLoading(false);
@@ -455,8 +453,7 @@ export const BotIntegrationsPage: React.FC = () => {
       await navigator.clipboard.writeText(text);
       setCopiedSection(section);
       setTimeout(() => setCopiedSection(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+    } catch (err) { log.error('Failed to copy to clipboard:', 'BotIntegrationsPage', { err });
     }
   };
 
@@ -918,8 +915,8 @@ async function chatWithBot(message, conversationId = null) {
 
 // Example usage
 chatWithBot('Hello, how can you help me?')
-  .then(result => console.log(result))
-  .catch(error => console.error('Error:', error));`;
+  .then(result => log.info(result))
+  .catch(error => log.error('Error:', 'BotIntegrationsPage', { 'BotIntegrationsPage', { error) } });`;
 
     const endpoints = [
       {

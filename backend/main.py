@@ -14,12 +14,16 @@ app = FastAPI(
     debug=settings.debug
 )
 
-# Add CORS middleware
+# Add CORS middleware with WebSocket support
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r".*",  # Allow all origins for widget embedding
-    allow_credentials=False,  # Disable credentials for widget requests
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origins=[
+        settings.frontend_url,  # Frontend application
+        "http://localhost:3000",  # Development frontend
+        "http://127.0.0.1:3000",  # Alternative localhost
+    ],
+    allow_credentials=True,  # Enable credentials for authentication
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=[
         "Content-Type", 
         "Authorization", 
@@ -29,7 +33,15 @@ app.add_middleware(
         "User-Agent",
         "Accept",
         "Origin",
-        "X-Requested-With"
+        "X-Requested-With",
+        "Cache-Control",
+        "Pragma",
+        "Connection",
+        "Upgrade",
+        "Sec-WebSocket-Key",
+        "Sec-WebSocket-Version",
+        "Sec-WebSocket-Protocol",
+        "Sec-WebSocket-Extensions"
     ],
 )
 

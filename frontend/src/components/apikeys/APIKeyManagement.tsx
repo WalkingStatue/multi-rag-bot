@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { APIKeyForm } from './APIKeyForm';
 import { APIKeyList } from './APIKeyList';
 import { apiKeyService } from '../../services/apiKeyService';
+import { log } from '../../utils/logger';
 import {
   APIKeyResponse,
   APIKeyCreate,
@@ -52,8 +53,7 @@ export const APIKeyManagement: React.FC = () => {
       
       setProviders(combinedProviders);
     } catch (err) {
-      setError('Failed to load API keys and providers');
-      console.error('Error loading data:', err);
+      setError('Failed to load API keys and providers'); log.error('Error loading data:', 'APIKeyManagement', { err });
     } finally {
       setLoading({ list: false, providers: false, action: false });
     }

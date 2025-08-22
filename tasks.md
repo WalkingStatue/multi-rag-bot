@@ -1,7 +1,7 @@
 ## Project Tasks (Prioritized)
 
 ### High Priority
-- [ ] Improve document retrieval with smart context switching for LLM and retrieval
+- [x] Improve document retrieval with smart context switching for LLM and retrieval
   - Estimate: 4–6 days
   - Depends on: none
 - [ ] Introduce Redis-based caching (review current caching and integrate)

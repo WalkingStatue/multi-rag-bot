@@ -1,7 +1,7 @@
 /**
  * Bot management service for API interactions
  */
-import { apiClient } from './api';
+import { enhancedApiClient } from './enhancedApi';
 import {
   BotCreate,
   BotUpdate,
@@ -24,7 +24,7 @@ export class BotService {
    * Create a new bot
    */
   async createBot(botData: BotCreate): Promise<BotResponse> {
-    const response = await apiClient.post('/bots/', botData);
+    const response = await enhancedApiClient.post('/bots/', botData);
     return response.data;
   }
 
@@ -32,7 +32,7 @@ export class BotService {
    * Get all bots accessible to the current user
    */
   async getUserBots(): Promise<BotWithRole[]> {
-    const response = await apiClient.get('/bots/');
+    const response = await enhancedApiClient.get('/bots/');
     return response.data;
   }
 
@@ -40,7 +40,7 @@ export class BotService {
    * Get a specific bot by ID
    */
   async getBot(botId: string): Promise<BotResponse> {
-    const response = await apiClient.get(`/bots/${botId}`);
+    const response = await enhancedApiClient.get(`/bots/${botId}`);
     return response.data;
   }
 
@@ -48,7 +48,7 @@ export class BotService {
    * Update a bot's configuration
    */
   async updateBot(botId: string, updates: BotUpdate): Promise<BotResponse> {
-    const response = await apiClient.put(`/bots/${botId}`, updates);
+    const response = await enhancedApiClient.put(`/bots/${botId}`, updates);
     return response.data;
   }
 
@@ -56,21 +56,21 @@ export class BotService {
    * Delete a bot (owner only)
    */
   async deleteBot(botId: string): Promise<void> {
-    await apiClient.delete(`/bots/${botId}`);
+    await enhancedApiClient.delete(`/bots/${botId}`);
   }
 
   /**
    * Transfer bot ownership to another user
    */
   async transferOwnership(botId: string, request: BotTransferRequest): Promise<void> {
-    await apiClient.post(`/bots/${botId}/transfer`, request);
+    await enhancedApiClient.post(`/bots/${botId}/transfer`, request);
   }
 
   /**
    * Get bot analytics and usage statistics
    */
   async getBotAnalytics(botId: string): Promise<BotAnalytics> {
-    const response = await apiClient.get(`/bots/${botId}/analytics`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/analytics`);
     return response.data;
   }
 
@@ -248,7 +248,7 @@ export class BotService {
    * Get bot permissions/collaborators
    */
   async getBotPermissions(botId: string): Promise<BotPermission[]> {
-    const response = await apiClient.get(`/bots/${botId}/permissions`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/permissions`);
     return response.data;
   }
 
@@ -259,7 +259,7 @@ export class BotService {
     botId: string,
     invite: CollaboratorInvite
   ): Promise<CollaboratorInviteResponse> {
-    const response = await apiClient.post(`/bots/${botId}/permissions/invite`, invite);
+    const response = await enhancedApiClient.post(`/bots/${botId}/permissions/invite`, invite);
     return response.data;
   }
 
@@ -271,7 +271,7 @@ export class BotService {
     userId: string,
     role: 'admin' | 'editor' | 'viewer'
   ): Promise<BotPermission> {
-    const response = await apiClient.put(`/bots/${botId}/permissions/${userId}`, { role });
+    const response = await enhancedApiClient.put(`/bots/${botId}/permissions/${userId}`, { role });
     return response.data;
   }
 
@@ -279,7 +279,7 @@ export class BotService {
    * Remove a collaborator from a bot
    */
   async removeCollaborator(botId: string, userId: string): Promise<void> {
-    await apiClient.delete(`/bots/${botId}/permissions/${userId}`);
+    await enhancedApiClient.delete(`/bots/${botId}/permissions/${userId}`);
   }
 
   /**
@@ -289,7 +289,7 @@ export class BotService {
     botId: string,
     updates: BulkPermissionUpdate
   ): Promise<BotPermission[]> {
-    const response = await apiClient.post(`/bots/${botId}/permissions/bulk`, updates);
+    const response = await enhancedApiClient.post(`/bots/${botId}/permissions/bulk`, updates);
     return response.data;
   }
 
@@ -297,7 +297,7 @@ export class BotService {
    * Get permission history for a bot
    */
   async getPermissionHistory(botId: string): Promise<PermissionHistory[]> {
-    const response = await apiClient.get(`/bots/${botId}/permissions/history`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/permissions/history`);
     return response.data;
   }
 
@@ -305,7 +305,7 @@ export class BotService {
    * Get activity log for a bot
    */
   async getActivityLog(botId: string): Promise<ActivityLog[]> {
-    const response = await apiClient.get(`/bots/${botId}/activity`);
+    const response = await enhancedApiClient.get(`/bots/${botId}/activity`);
     return response.data;
   }
 
@@ -314,7 +314,7 @@ export class BotService {
    * Search for users to invite as collaborators
    */
   async searchUsers(query: string): Promise<Array<{ id: string; username: string; email: string }>> {
-    const response = await apiClient.get(`/users/search?q=${encodeURIComponent(query)}`);
+    const response = await enhancedApiClient.get(`/users/search?q=${encodeURIComponent(query)}`);
     return response.data;
   }
 

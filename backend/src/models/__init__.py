@@ -3,6 +3,7 @@ Database models package.
 """
 from .user import User, UserAPIKey
 from .bot import Bot, BotPermission
+from .bot_api_key import BotAPIKey
 from .conversation import ConversationSession, Message
 from .document import Document, DocumentChunk
 from .activity import ActivityLog
@@ -15,6 +16,7 @@ __all__ = [
     "UserAPIKey", 
     "Bot",
     "BotPermission",
+    "BotAPIKey",
     "ConversationSession",
     "Message",
     "Document",

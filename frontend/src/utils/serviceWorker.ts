@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import { getEnvVar } from '../config/environment';
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -17,14 +18,14 @@ export interface ServiceWorkerConfig {
 
 export const registerServiceWorker = (config?: ServiceWorkerConfig) => {
   if ('serviceWorker' in navigator) {
-    const publicUrl = new URL(import.meta.env.VITE_PUBLIC_URL || '', window.location.href);
+    const publicUrl = new URL(getEnvVar.get('VITE_PUBLIC_URL', '') || '', window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       // Our service worker won't work if PUBLIC_URL is on a different origin
       return;
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${import.meta.env.VITE_PUBLIC_URL || ''}/sw.js`;
+      const swUrl = `${getEnvVar.get('VITE_PUBLIC_URL', '') || ''}/sw.js`;
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.

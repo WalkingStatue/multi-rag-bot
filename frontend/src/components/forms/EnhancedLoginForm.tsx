@@ -10,6 +10,7 @@ import { Button } from '../common/Button';
 import { Alert } from '../common/Alert';
 import { FormErrorBoundary } from '../common/EnhancedErrorBoundary';
 import { LoginFormData } from '../../utils/formValidation';
+import { getEnvVar } from '../../config/environment';
 
 interface EnhancedLoginFormProps {
   onSuccess?: () => void;
@@ -115,7 +116,7 @@ export const EnhancedLoginForm: React.FC<EnhancedLoginFormProps> = ({
             </Button>
 
             {/* Development helper */}
-            {import.meta.env.DEV && hasErrors && (
+            {getEnvVar.DEV() && hasErrors && (
               <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
                 <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                   Form Validation Errors:

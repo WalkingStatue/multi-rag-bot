@@ -1,6 +1,7 @@
 /**
  * Comprehensive error handling utilities
  */
+import { log } from './logger';
 
 export interface AppError {
   type: 'network' | 'api' | 'validation' | 'auth' | 'rate_limit' | 'unknown';
@@ -137,10 +138,8 @@ export function logError(error: AppError, context?: ErrorContext): void {
     timestamp: error.timestamp.toISOString()
   };
 
-  // Log to console in development
-  if (import.meta.env.DEV) {
-    console.error('Application Error:', logData);
-  }
+  // Log using the logger system
+  log.error('Application Error', 'ErrorHandler', logData);
 
   // In production, you might want to send to monitoring service
   // Example: sendToMonitoringService(logData);
@@ -210,7 +209,7 @@ export class ErrorHandler {
       try {
         listener(appError);
       } catch (e) {
-        console.error('Error in error listener:', e);
+        log.error('Error in error listener', 'ErrorHandler', e);
       }
     });
 
